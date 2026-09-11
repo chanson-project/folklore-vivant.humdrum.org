@@ -31,8 +31,6 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-the1520sProject_data_url: https://data.1520s-project.org
-
 header_pages:
   - about/index.markdown
   - documentation/index.markdown

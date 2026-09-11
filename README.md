@@ -6,8 +6,7 @@ playback, and bilingual (EN/FR) UI.
 
 This codebase was forked from **[The 1520s Project](https://github.com/benory/1520s-project-website)**
 (a database of European polyphony ca. 1510–1540) and repurposed for a
-different repertoire. Some internal names, SEO strings, and comments still
-say "1520s Project" — see [Known rough edges](#known-rough-edges).
+different repertoire.
 
 - **Live site:** https://folklore-vivant.humdrum.org
 - **License:** [CC BY-NC 4.0](LICENSE)
@@ -25,7 +24,6 @@ say "1520s Project" — see [Known rough edges](#known-rough-edges).
 - [Local development](#local-development)
 - [Updating content](#updating-content)
 - [Deployment](#deployment)
-- [Known rough edges](#known-rough-edges)
 
 ---
 
@@ -92,7 +90,8 @@ _layouts/
                          documentation, guide), each with index.markdown/.md,
                          scripts-local.html, scripts-listeners.html, styles-local.html
 assets/melodic-index.json  Generated melodic search index (pitches + scale degrees per work)
-_data/Josquin/          Legacy data-file leftovers from the 1520s Project fork
+education-source/       Source Word docs/PDFs used to write the education/ page content
+                         (gitignored — not part of the built site)
 ```
 
 Each page directory follows the same convention described in `CLAUDE.md`:
@@ -261,14 +260,3 @@ site to Pages → Run workflow**):
 There is no separate staging environment — every push to `main` goes live.
 Branch before making risky changes and preview locally with `jekyll serve`
 first.
-
-## Known rough edges
-
-- `_layouts/work.html`'s SEO `<title>`/meta tags still say "The 1520s
-  Project" — a leftover from the fork, not yet updated for the Chanson
-  Project rebrand.
-- Two `education`/`Education` directories exist: lowercase `education/` is
-  the live Jekyll page; capitalized `Education/` holds source Word docs
-  used to produce it and is gitignored from the build.
-- `_data/Josquin/` and the `the1520sProject_data_url` setting in
-  `_config.yml` are unused leftovers from the 1520s Project fork.
