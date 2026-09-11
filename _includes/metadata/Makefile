@@ -12,6 +12,9 @@
 ##
 ##              Type "make" in this directory to download the JSON files for the metadata.
 ##
+##              Google Spreadsheet metadata:
+#		https://docs.google.com/spreadsheets/d/16E5ZaTv--7Ketd5Lpgcbk11aKRj9T2hDjjRUiRHiAOY/edit?gid=765727095#gid=765727095
+##
 
 
 #SID for 1520s Project Metadata

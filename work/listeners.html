@@ -36,6 +36,10 @@ DATA1520.hnp_options = {
 DATA1520.cgi = getCgiParameters();
 DATA1520.workid = DATA1520.cgi.id || "BC001";
 
+console.error("DATA1520", DATA1520);
+
+
+
 
 //////////////////////////////
 //
@@ -379,8 +383,170 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+//////////////////////////////
+//
+// initializeAccidentalStateButton --
+//
+
+function initializeAccidentalStateButton() {
+	let state = window.localStorage.AccidentalState;
+	if (!state) {
+		state = "show";
+		window.localStorage.AccidentalState = "show";
+	}
+	let element = document.querySelector("#accidentalSelect");
+	if (!element) {
+		return;
+	}
+	let showElement = element.querySelector(".show");
+	if (!showElement) {
+		console.error("Cannot find accidental show button");
+		return;
+	}
+	let hideElement = element.querySelector(".hide");
+	if (!showElement) {
+		console.error("Cannot find accidental hide button");
+		return;
+	}
+	if (state === "show") {
+		showElement.classList.add("hidden");
+		hideElement.classList.remove("hidden");
+	} else {
+		showElement.classList.remove("hidden");
+		hideElement.classList.add("hidden");
+	}
+}
 
 
+//////////////////////////////
+//
+// createLookup -- Convert an array of objects into a lookup table, where the
+//    "ID" property of the objects is used as the key value for the lookup table.
+//    For example if the ID of an entry is "Jac2001" in the input array, then
+//    output.Jac2001 (or output["Jac2001"]) will return the entry for work ID "Jac2001".
+//
+
+function createLookup(dataArray) {
+	if (!Array.isArray(dataArray)) {
+		console.error("ERROR: input is not an array:", dataArray);
+		return;
+	}
+	let output = {};
+	for (entry of dataArray) {
+		let id = entry[FIELD.id]
+		output[id] = entry;
+	}
+	return output;
+}
+
+
+
+/////////////////////////////////
+//
+// displayWork --
+//
+
+function displayWork(id) {
+	console.error("========================================================");
+	console.error("ID=", id, "WORIID=", DATA1520.workid);
+	if (!id) {
+		id = DATA1520.workid;
+	}
+	if (!id) {
+		id = "BC001";
+	}
+	DATA1520.workid = id;
+
+	if (typeof id !== "string") {
+		console.error("ERROR: Work ID is not a string:", string);
+		return;
+	}
+
+	// Clear POSTHTML from any previous work immediately.
+	injectHtmlBlock("POSTHTML", null);
+
+	// See https://plugin.humdrum.org/options/#list for more display options.
+	// Copying default options from DATA1520.hnp_options:
+	let hnpOptions = JSON.parse(JSON.stringify(DATA1520.hnp_options));
+
+	// Set display options:
+	hnpOptions.filter = [];
+	if (DATA1520.filter) {
+		hnpOptions.filter.push(DATA1520.filter);
+	}
+	if (window.localStorage.AccidentalState === "hide") {
+		hnpOptions.filter.push("shed -ke s/X?i/y/g");
+	}
+	// When text display is active, ask Verovio to run the `text` filter.
+	// The filter embeds a @@BEGIN: POSTHTML block in the filtered output,
+	// which postFunctionHumdrum then extracts and injects into div.POSTHTML.
+	if (TEXT_FILTER_ACTIVE) {
+		hnpOptions.filter.push("text -a");
+		hnpOptions.postFunctionHumdrum = function(humdrumOutput) {
+			const html = extractHtmlBlock(humdrumOutput, "PREHTML");
+			injectHtmlBlock("PREHTML", html);
+		};
+	}
+	if (DEG_FILTER_ACTIVE) {
+		hnpOptions.filter.push("deg");
+	}
+	// let prefix = id.substring(0, 2);
+	// Use regular expressions (of one or more letter)
+	let prefix = id.match(/^[A-Za-z]+/)?.[0].toLowerCase();
+	console.error("PREFIX", prefix);
+
+	// Hardwiring prefix is not good ;-)
+	// if (prefix === "BC" || prefix === "EG") {
+		// let dir = prefix === "BC" ? "bc100" : "eg104";
+		let dir = prefix;
+		let work = DATA1520.lookup.works[id];
+		if (!work) {
+			console.error("WORK NOT FOUND", id);
+		} else {
+			console.error("WORK FOUND", id, "WORK METADATA=", work);
+		}
+		let filename = work[FIELD.filename] || "";
+		// sometime in the spreadsheet the .krn extension is not given (mb volume, for example).  Add it hre is it missing:
+		if (!filename.match(/\.krn$/)) {
+			filename += ".krn";
+		}
+		console.error("FILENAME", filename);
+		let address = `https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/${prefix}/kern/${filename}`;
+		console.error("ADDRESS", address);
+		fetch(address)
+			.then(function(response) { return response.text(); })
+			.then(function(kern) {
+				hnpOptions.postFunction = function() {
+					removeWait();
+					prepareQEvents(id);
+				};
+				const melodyParam = DATA1520.cgi.melody || "";
+				let displayKern = melodyParam ? markMelodicMatches(kern, melodyParam) : kern;
+				if (CADENCE_FILTER_ACTIVE) {
+					const result = markCadences(displayKern);
+					displayKern = result.markedKern;
+					LAST_CADENCE_LIST = result.cadences;
+					renderCadencePanel(LAST_CADENCE_LIST);
+				} else {
+					const panel = document.getElementById('cadence-panel');
+					if (panel) panel.classList.add('hidden');
+				}
+				document.getElementById("my-score").textContent = displayKern;
+				displayHumdrum(hnpOptions);
+				KernPlayer.load(kern);  // player uses original (unmarked) kern
+			});
+	//} else {
+	//	hnpOptions.postFunction = function() {
+	//		removeWait();
+	//		prepareQEvents(id);
+	//	};
+	//	displayHumdrum(hnpOptions);
+	//}
+
+	displayWorkInfo(id);
+	displayExternalInfo(id);
+	displayWorkFooter(id);
+}
 </script>
 
 

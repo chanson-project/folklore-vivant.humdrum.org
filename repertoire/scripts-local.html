@@ -266,12 +266,16 @@ function getTitle(entry) {
 
 //////////////////////////////
 //
-// getCollection -- Derive collection name (!!!OPR) from sources lookup.
+// getCollection -- Derive collection name (!!!PTL) from sources lookup.
 //
 
 function getCollection(entry) {
-	let prefix = (entry[FIELD.id] || "").substring(0, 2);
-	let source = SOURCES_LOOKUP[prefix];
+console.error("ENTRY", entry);
+	//let prefix = (entry[FIELD.id] || "").substring(0, 2);
+	let prefix = (entry[FIELD.id] || "").match(/^[A-Za-z]{1,3}/)?.[0] || "";
+	let source = SOURCES_LOOKUP[prefix.toUpperCase()];
+console.error("PREFIX", prefix, "SOURCE", source);
+console.error("SOURCES", SOURCES_LOOKUP);
 	if (!source) return prefix;
 	return source[SOURCE_FIELD.title] || prefix;
 }
@@ -285,7 +289,7 @@ function getCollection(entry) {
 
 function getEditor(entry) {
 	let prefix = (entry[FIELD.id] || "").substring(0, 2);
-	let source = SOURCES_LOOKUP[prefix];
+	let source = SOURCES_LOOKUP[prefix.toUpperCase()];
 	if (!source) return "";
 	let editor = source[SOURCE_FIELD.editor] || "";
 	let m = editor.match(/^(.*?)\s*,\s*(.*?)$/);

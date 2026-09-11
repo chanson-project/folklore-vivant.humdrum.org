@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Support ?s=BC deep-link
     const params = new URLSearchParams(window.location.search);
-    const s = params.get("s");
+    let s = params.get("s").toLowerCase();
     if (s) selectSource(s);
 });
 
