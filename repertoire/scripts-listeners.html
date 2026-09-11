@@ -5,7 +5,7 @@ let SOURCES_METADATA      = {% include metadata/sources.json %};
 let SOURCES_LOOKUP        = {};
 for (let _si = 0; _si < SOURCES_METADATA.length; _si++) {
     let _s = SOURCES_METADATA[_si];
-    if (_s[SOURCE_FIELD.id]) SOURCES_LOOKUP[_s[SOURCE_FIELD.id].substring(0, 2)] = _s;
+    if (_s[SOURCE_FIELD.id]) SOURCES_LOOKUP[_s[SOURCE_FIELD.id].match(/^[A-a-z]+/)] = _s;
 }
 
 // Column identifiers for the browse table.
