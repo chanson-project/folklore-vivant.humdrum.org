@@ -232,7 +232,7 @@ function displayWorkInfo(id) {
 
 	// Derive collection label and GitHub paths from ID prefix
 	const prefix = id.substring(0, 2);
-	const dir    = prefix === "BC" ? "bc100" : prefix === "EG" ? "eg104" : "";
+	const dir    = prefix === "BC" ? "bc" : prefix === "EG" ? "eg" : prefix === "MB" ? "mb" : "";
 	const fname  = workinfo[FIELD.filename] || "";
 	const rawBase    = "https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main";
 	const githubBase = "https://github.com/chanson-project/chanson-encoding/blob/main";
