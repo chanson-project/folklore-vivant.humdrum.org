@@ -19,7 +19,7 @@ const _ALL_WORKS = {% include metadata/works.json %};
 
 const SING_WORKS = _ALL_WORKS.filter(function(w) {
   const id = (w[FIELD.id] || '');
-  const prefix = id.substring(0, 2);
+  const prefix = id.substring(0, 2).toUpperCase();
   return (prefix === 'BC' || prefix === 'EG') && w['!!!EST-text'];
 }).sort(function(a, b) {
   const ta = (a[FIELD.title] || '').replace(/^\s+/, '');
