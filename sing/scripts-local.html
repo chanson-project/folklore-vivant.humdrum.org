@@ -107,7 +107,7 @@ function selectSong(idx) {
   const comp     = (w[FIELD.composer] || '').trim();
   const id       = (w[FIELD.id] || '');
   const filename = (w[FIELD.filename] || '');
-  const prefix   = id.substring(0, 2);
+  const prefix = id.substring(0, 2).toUpperCase();
   const col      = CARD_PALETTE[idx % CARD_PALETTE.length];
 
   document.getElementById('stage-title').textContent = title;
