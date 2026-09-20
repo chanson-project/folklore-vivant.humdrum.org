@@ -142,6 +142,7 @@ function selectSong(idx) {
   const textUrl =
     'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' +
     dir + '/text/' + textFilename;
+  console.log("TEXT URL:", textUrl);
 
   fetch(textUrl)
     .then(function(r) {
