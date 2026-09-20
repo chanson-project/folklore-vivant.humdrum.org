@@ -138,9 +138,30 @@ function selectSong(idx) {
       const mmMatch = kern.match(/\*MM([\d.]+)/);
       DEFAULT_TEMPO = mmMatch ? parseFloat(mmMatch[1]) : 120;
       setTempoScale(1, true);
+  const textFilename = filename.replace(/\.krn$/, '.txt');
+  const textUrl =
+    'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' +
+    dir + '/text/' + textFilename;
 
-      const words = extractLyrics(kern);
-      renderLyrics(words, col.text);
+  fetch(textUrl)
+    .then(function(r) {
+        if (!r.ok) throw new Error(r.status);
+        return r.text();
+    })
+    .then(function(text) {
+        const words = text
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(Boolean);
+
+        renderLyrics(words, col.text);
+    })
+    .catch(function() {
+        // fallback: if no text file exists, use lyrics from kern
+        const words = extractLyrics(kern);
+        renderLyrics(words, col.text);
+    });
+
 
       btn.disabled = false;
       btn.textContent = '▶';
