@@ -127,7 +127,7 @@ function selectSong(idx) {
   setTempoScale(1, true);
   showStage();
 
-  const dir = prefix === 'BC' ? 'bc100' : 'eg104';
+  const dir = prefix === 'BC' ? 'bc' : 'eg';
   const url = 'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' + dir + '/kern/' + filename;
 
   fetch(url)
