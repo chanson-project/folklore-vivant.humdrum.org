@@ -150,13 +150,20 @@ function selectSong(idx) {
         return r.text();
     })
     .then(function(text) {
-        const words = text
-            .split(/\r?\n/)
-            .map(line => line.trim())
-            .filter(Boolean);
+    const lines = text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
 
-        renderLyrics(words, col.text);
-    })
+    const lyricsBox = document.getElementById('stage-lyrics');
+    lyricsBox.innerHTML = '';
+
+    lines.forEach(function(line) {
+        const p = document.createElement('p');
+        p.textContent = line;
+        lyricsBox.appendChild(p);
+    });
+})
     .catch(function() {
         // fallback: if no text file exists, use lyrics from kern
         const words = extractLyrics(kern);
