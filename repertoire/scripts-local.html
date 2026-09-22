@@ -452,7 +452,8 @@ function buildCollectionSelect(data) {
 
     output += `<option value="${name}">${label} (${counter[name]})</option>`;
 }
-
+output += "</select>\n";
+return output;
 
 
 //////////////////////////////
