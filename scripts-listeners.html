@@ -5,8 +5,7 @@ let SOURCES_METADATA = {% include metadata/sources.json %};
 let SOURCES_LOOKUP   = {};
 for (let _si = 0; _si < SOURCES_METADATA.length; _si++) {
     let _s = SOURCES_METADATA[_si];
-    let id = (_s[SOURCE_FIELD.id] || "").trim();
-    if (id) SOURCES_LOOKUP[id.toUpperCase()] = _s;
+    if (_s.Name) SOURCES_LOOKUP[_s.Name] = _s;
 }
 let GENRE_INDEX;
 
