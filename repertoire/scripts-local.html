@@ -446,11 +446,8 @@ function buildCollectionSelect(data) {
 	let output = "<select class='collection' onchange='doSearch()'>\n";
 	output += `<option value="">${t('rep.collection_label')} (${clist.length})</option>`;
 	for (let i = 0; i < clist.length; i++) {
-		let name = clist[i];
-    	let source = SOURCES_LOOKUP[name.toUpperCase()];
-    	let label = source ? (source[SOURCE_FIELD.title] || name) : name;
-
-    output += `<option value="${name}">${label} (${counter[name]})</option>`;
+    let name = clist[i];
+    output += `<option value="${name}">${name} (${counter[name]})</option>`;
 }
 output += "</select>\n";
 return output;
