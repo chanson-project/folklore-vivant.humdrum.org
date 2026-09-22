@@ -34,7 +34,7 @@ WORKS_JSON = Path("_includes/metadata/works.json")
 OUTPUT     = Path("assets/melodic-index.json")
 
 # 2-char work-ID prefix → subdirectory in the encoding repo
-DIR_MAP = {"BC": "bc100", "EG": "eg104"}
+DIR_MAP = {"BC": "bc", "EG": "eg", "MB": "mb"}
 
 # Semitone distance from tonic → scale-degree label, for major and minor keys.
 # Diatonic degrees are 1–7; chromatic alterations carry # or b prefix.
@@ -144,12 +144,21 @@ def main():
     works = json.loads(WORKS_JSON.read_text(encoding='utf-8'))
 
     path_to_id = {}
+
     for work in works:
         work_id   = (work.get("!!!id") or "").strip()
         filename  = (work.get("!!!file-name") or "").strip()
-        prefix    = work_id[:2]
+        prefix    = work_id[:2].upper()
         directory = DIR_MAP.get(prefix)
+
         if work_id and filename and directory:
+            filename = re.sub(
+                r'^[A-Za-z]+',
+                lambda m: m.group(0).lower(),
+                filename
+            )
+            filename = filename.replace("'", "")
+
             path_to_id[f"{directory}/kern/{filename}"] = work_id
 
     print(f"Fetching encoding repository ({REPO_ZIP}) …")
