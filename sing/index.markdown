@@ -47,7 +47,7 @@ nav_exclude: true
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Watch on YouTube"
-       title="Watch on YouTube">▶️</a>
+       title="Watch on YouTube"></a>
 </div>
     <div id="stage-comp" class="stage-comp"></div>
   </div>
