@@ -39,7 +39,16 @@ nav_exclude: true
 
   <!-- Song title — first thing kids see -->
   <div class="stage-info">
+    <div class="stage-title-row">
     <div id="stage-title" class="stage-title"></div>
+    <a id="stage-youtube"
+       class="stage-youtube hidden"
+       href="#"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Watch on YouTube"
+       title="Watch on YouTube">▶️</a>
+</div>
     <div id="stage-comp" class="stage-comp"></div>
   </div>
 
