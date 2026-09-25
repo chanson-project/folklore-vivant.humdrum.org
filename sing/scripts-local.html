@@ -105,6 +105,7 @@ function selectSong(idx) {
   const w        = SING_WORKS[idx];
   const title    = (w[FIELD.title] || '—').trim();
   const comp     = (w[FIELD.composer] || '').trim();
+  const ytURL    = (w[FIELD.url_youtube] || '').trim();
   const id       = (w[FIELD.id] || '');
   const filename = (w[FIELD.filename] || '');
   const prefix = id.substring(0, 2).toUpperCase();
@@ -112,6 +113,17 @@ function selectSong(idx) {
 
   document.getElementById('stage-title').textContent = title;
   document.getElementById('stage-comp').textContent  = comp;
+
+  const ytLink = document.getElementById('stage-youtube');
+
+  if (ytURL) {
+    ytLink.href = ytURL;
+    ytLink.classList.remove('hidden');
+} else {
+    ytLink.href = '#';
+    ytLink.classList.add('hidden');
+}
+
   document.getElementById('stage-lyrics').innerHTML  = '<div class="lyrics-loading">🎵 Loading…</div>';
 
   document.getElementById('stage-prev').disabled = (idx === 0);
