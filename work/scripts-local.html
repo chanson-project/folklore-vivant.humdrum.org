@@ -231,7 +231,7 @@ function displayWorkInfo(id) {
 	if (!tbody.innerHTML.match(/^\s*$/)) return;
 
 	// Derive collection label and GitHub paths from ID prefix
-	const prefix = id.substring(0, 2);
+	const prefix = id.substring(0, 2).toUpperCase();
 	const dir    = prefix === "BC" ? "bc" : prefix === "EG" ? "eg" : prefix === "MB" ? "mb" : "";
 	const fname  = workinfo[FIELD.filename] || "";
 	const rawBase    = "https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main";
