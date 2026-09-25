@@ -1,6 +1,6 @@
 [
 	{
-		"!!!id": "BC100",
+		"!!!id": "bc100",
 		"!!!PTL": "Les cent plus belles chansons",
 		"!!!PDT": "1956; 2011",
 		"!!!PPR": "La Bonne Chanson, inc.",
@@ -9,7 +9,7 @@
 		"!!!YEM": "2012 Bibliothèque nationale du Québec; Biblothèque nationale du Canada"
 	},
 	{
-		"!!!id": "EG104",
+		"!!!id": "eg104",
 		"!!!PTL": "Chansons populaires du Canada",
 		"!!!PTL-sub": "Recueillies et publiées avec annotations, etc | par | Ernest Gagnon",
 		"!!!PDT": "1865",
@@ -18,7 +18,7 @@
 		"!!!PED": "Gagnon,Ernest"
 	},
 	{
-		"!!!id": "MB157",
+		"!!!id": "mb157",
 		"!!!PTL": "Le rossignol y chante",
 		"!!!PTL-sub": "Première partie du Répertoire de la chanson folklorique française au Canada, Bulletin no 175, No 52 de la série anthropologique",
 		"!!!PDT": "1962",
