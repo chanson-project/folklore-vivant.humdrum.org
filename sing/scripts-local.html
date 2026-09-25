@@ -115,18 +115,60 @@ function selectSong(idx) {
 
   document.getElementById('stage-title').textContent = title;
   document.getElementById('stage-comp').textContent  = comp;
-
   const ytLink = document.getElementById('stage-youtube');
-  
-if (ytURL) {
-    ytLink.href = ytURL;
+  const ytPlayer = document.getElementById('stage-youtube-player');
+
+  // Reset the YouTube player whenever a new song is selected.
+  ytPlayer.innerHTML = '';
+  ytPlayer.classList.add('hidden');
+
+  if (ytURL) {
+    ytLink.href = '#';
     ytLink.innerHTML = YT_ICON_SVG;
     ytLink.classList.remove('hidden');
-} else {
+
+    ytLink.onclick = function(event) {
+      event.preventDefault();
+
+      // Clicking the YouTube icon again closes the player.
+      if (!ytPlayer.classList.contains('hidden')) {
+        ytPlayer.innerHTML = '';
+        ytPlayer.classList.add('hidden');
+        return;
+      }
+
+      let videoId = null;
+
+      try {
+        const u = new URL(ytURL);
+        videoId = u.hostname.includes('youtu.be')
+          ? u.pathname.slice(1)
+          : u.searchParams.get('v');
+      } catch {}
+
+      if (videoId) {
+        ytPlayer.innerHTML =
+          `<iframe
+            src="https://www.youtube.com/embed/${videoId}"
+            frameborder="0"
+            allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            loading="lazy"
+            title="Watch on YouTube">
+          </iframe>`;
+
+        ytPlayer.classList.remove('hidden');
+      } else {
+        window.open(ytURL, '_blank', 'noopener,noreferrer');
+      }
+    };
+  } else {
     ytLink.href = '#';
     ytLink.innerHTML = '';
     ytLink.classList.add('hidden');
-}
+    ytLink.onclick = null;
+  }
+
 
   document.getElementById('stage-lyrics').innerHTML  = '<div class="lyrics-loading">🎵 Loading…</div>';
 

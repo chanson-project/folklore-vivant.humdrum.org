@@ -52,6 +52,8 @@ nav_exclude: true
     <div id="stage-comp" class="stage-comp"></div>
   </div>
 
+  <div id="stage-youtube-player" class="stage-youtube-player hidden"></div>
+
   <!-- Player: prev · play/pause · next in one row -->
   <div class="stage-player">
     <button id="stage-prev" class="sing-btn arrow-btn" onclick="prevSong()" aria-label="Previous song">‹</button>
