@@ -52,11 +52,31 @@ nav_exclude: true
 
   <div id="kp-progress" class="kp-progress"><div id="kp-progress-fill" class="kp-progress-fill"></div></div>
 
-  <div class="tempo-row">
-    <button class="tempo-btn" data-scale="0.5"  onclick="setTempoScale(0.5)"  title="Slow">🐢</button>
-    <button class="tempo-btn active" data-scale="1"  onclick="setTempoScale(1)"    title="Normal">♩</button>
-    <button class="tempo-btn" data-scale="1.5"  onclick="setTempoScale(1.5)"  title="Fast">🐇</button>
-  </div>
+<div class="tempo-row">
+  <button class="tempo-btn" data-scale="0.5" onclick="setTempoScale(0.5)" title="Slow">🐢</button>
+
+  <input id="sing-tempo-slider"
+         class="sing-tempo-slider"
+         type="range"
+         min="20"
+         max="240"
+         value="120"
+         oninput="setSingTempo(this.value)">
+
+  <button class="tempo-btn" data-scale="1.5" onclick="setTempoScale(1.5)" title="Fast">🐇</button>
+
+  <label class="sing-tempo-input-wrap">
+    <span>♩</span>
+    <input id="sing-tempo-input"
+           class="sing-tempo-input"
+           type="number"
+           min="20"
+           max="240"
+           value="120"
+           onchange="setSingTempo(this.value)">
+    <span>bpm</span>
+  </label>
+</div>
 
   <div id="stage-lyrics" class="stage-lyrics"></div>
 
