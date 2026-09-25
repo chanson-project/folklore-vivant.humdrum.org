@@ -273,7 +273,7 @@ function getCollection(entry) {
 console.error("ENTRY", entry);
 	//let prefix = (entry[FIELD.id] || "").substring(0, 2);
 	let prefix = (entry[FIELD.id] || "").match(/^[A-Za-z]{1,3}/)?.[0] || "";
-	let source = SOURCES_LOOKUP[prefix.toUpperCase()];
+	let source = SOURCES_LOOKUP[prefix];
 console.error("PREFIX", prefix, "SOURCE", source);
 console.error("SOURCES", SOURCES_LOOKUP);
 	if (!source) return prefix;
@@ -289,7 +289,7 @@ console.error("SOURCES", SOURCES_LOOKUP);
 
 function getEditor(entry) {
 	let prefix = (entry[FIELD.id] || "").substring(0, 2);
-	let source = SOURCES_LOOKUP[prefix.toUpperCase()];
+	let source = SOURCES_LOOKUP[prefix];
 	if (!source) return "";
 	let editor = source[SOURCE_FIELD.editor] || "";
 	let m = editor.match(/^(.*?)\s*,\s*(.*?)$/);
