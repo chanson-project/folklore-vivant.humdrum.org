@@ -53,6 +53,7 @@ function buildSingGrid(works) {
     const realIdx = SING_WORKS.indexOf(w);
     const col     = CARD_PALETTE[realIdx % CARD_PALETTE.length];
     const emoji   = CARD_EMOJIS[realIdx % CARD_EMOJIS.length];
+    const id      = (w[FIELD.id] || '').trim();
     const title   = (w[FIELD.title] || '—').trim();
     const comp    = (w[FIELD.composer] || '').trim();
     return `
@@ -60,6 +61,12 @@ function buildSingGrid(works) {
            style="background:${col.bg}; border-color:${col.border};"
            role="button" tabindex="0"
            onkeydown="if(event.key==='Enter'||event.key===' ')selectSong(${realIdx})">
+
+        <a class="sing-card-id"
+          href="/work/?id=${encodeURIComponent(id)}"
+          title="Go to score / notation musicale"
+          onclick="event.stopPropagation()">${id}</a>
+
         <div class="sing-card-emoji">${emoji}</div>
         <div class="sing-card-title" style="color:${col.text}">${title}</div>
         ${comp ? `<div class="sing-card-comp">${comp}</div>` : ''}
