@@ -200,6 +200,8 @@ function selectSong(idx) {
     .then(function(kern) {
       KernPlayer.load(kern);
 
+      const songSections = extractSongSections(kern);
+
       const mmMatch = kern.match(/\*MM([\d.]+)/);
       DEFAULT_TEMPO = mmMatch ? parseFloat(mmMatch[1]) : 120;
       setTempoScale(1, true);
@@ -209,45 +211,65 @@ function selectSong(idx) {
     dir + '/text/' + textFilename;
   console.log("TEXT URL:", textUrl);
 
-  fetch(textUrl)
-    .then(function(r) {
-        if (!r.ok) throw new Error(r.status);
-        return r.text();
-    })
-    .then(function(text) {
-    const lines = text
-        .split(/\r?\n/)
-        .map(line => line.trim())
-        .filter(Boolean);
+const lyricsBox = document.getElementById('stage-lyrics');
+lyricsBox.innerHTML = '';
 
-    const lyricsBox = document.getElementById('stage-lyrics');
-    lyricsBox.innerHTML = '';
+let verseNumber = 0;
 
-    lines.forEach(function(line) {
-        const p = document.createElement('p');
-        p.textContent = line;
-        lyricsBox.appendChild(p);
-    });
-})
-    .catch(function() {
-        // fallback: if no text file exists, use lyrics from kern
-        const words = extractLyrics(kern);
-        renderLyrics(words, col.text);
-    });
+songSections.forEach(function(section) {
+    const row = document.createElement('div');
 
+    if (section.type === 'refrain') {
+        row.className = 'lyrics-row refrain-row';
 
-      btn.disabled = false;
+        const label = document.createElement('span');
+        label.className = 'lyrics-label';
+        label.textContent = 'REFRAIN';
+
+        const lyricText = document.createElement('strong');
+        lyricText.className = 'refrain-text';
+        lyricText.textContent = section.text;
+
+        row.appendChild(label);
+        row.appendChild(lyricText);
+
+    } else {
+        row.className = 'lyrics-row verse-row';
+
+        verseNumber++;
+
+        const label = document.createElement('span');
+        label.className = 'lyrics-label';
+        label.textContent = 'VERSE ' + verseNumber;
+
+        const lyricText = document.createElement('span');
+        lyricText.className = 'verse-text';
+        lyricText.textContent = section.text;
+
+        row.appendChild(label);
+        row.appendChild(lyricText);
+    }
+
+    lyricsBox.appendChild(row);
+});
+
+           btn.disabled = false;
       btn.textContent = '▶';
     })
     .catch(function() {
-      document.getElementById('stage-lyrics').innerHTML = '<p class="lyrics-error">Could not load song — Impossible de charger la chanson.</p>';
+      document.getElementById('stage-lyrics').innerHTML =
+        '<p class="lyrics-error">Could not load song — Impossible de charger la chanson.</p>';
       btn.textContent = '—';
     });
 }
 
-function prevSong() { if (CURRENT_IDX > 0) selectSong(CURRENT_IDX - 1); }
-function nextSong() { if (CURRENT_IDX < SING_WORKS.length - 1) selectSong(CURRENT_IDX + 1); }
+function prevSong() {
+  if (CURRENT_IDX > 0) selectSong(CURRENT_IDX - 1);
+}
 
+function nextSong() {
+  if (CURRENT_IDX < SING_WORKS.length - 1) selectSong(CURRENT_IDX + 1);
+}
 // ── Playback ──────────────────────────────────────────────────────────────────
 
 function togglePlay() {
@@ -371,6 +393,155 @@ function extractLyrics(kernText) {
   if (cur) words.push(cur);
 
   return words;
+}
+
+function extractSongSections(kern) {
+    const lines = kern.split(/\r?\n/);
+
+    const headerIndex = lines.findIndex(function(line) {
+        return line.startsWith('**kern');
+    });
+
+    if (headerIndex === -1) return [];
+
+    const headers = lines[headerIndex].split(/\t/);
+
+    const textIndexes = [];
+
+    headers.forEach(function(header, index) {
+        if (header === '**text') {
+            textIndexes.push(index);
+        }
+    });
+
+    if (textIndexes.length === 0) return [];
+
+    const sections = [];
+
+    // Current Humdrum section type.
+    let mode = 'verse';
+
+    // Each text spine gets its own verse number.
+    const verseNumbers = {};
+    textIndexes.forEach(function(textIndex, index) {
+        verseNumbers[textIndex] = index + 1;
+    });
+
+    // Buffers for the currently active section.
+    let verseBuffers = {};
+    let refrainBuffer = [];
+
+    function joinSyllables(syllables) {
+        return syllables
+            .join(' ')
+            .replace(/-\s+-?/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function flushVerse() {
+        textIndexes.forEach(function(textIndex) {
+            const syllables = verseBuffers[textIndex] || [];
+            const text = joinSyllables(syllables);
+
+            if (text) {
+                sections.push({
+                    type: 'verse',
+                    number: verseNumbers[textIndex],
+                    text: text
+                });
+            }
+        });
+
+        verseBuffers = {};
+    }
+
+    function flushRefrain() {
+        const text = joinSyllables(refrainBuffer);
+
+        if (text) {
+            sections.push({
+                type: 'refrain',
+                text: text
+            });
+        }
+
+        refrainBuffer = [];
+    }
+
+    function flushCurrentSection() {
+        if (mode === 'verse') {
+            flushVerse();
+        } else if (mode === 'refrain') {
+            flushRefrain();
+        }
+    }
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Humdrum explicitly changes to a refrain.
+        if (line.includes('*>Refrain')) {
+            flushCurrentSection();
+
+            mode = 'refrain';
+            refrainBuffer = [];
+            continue;
+        }
+
+        // Humdrum explicitly changes to a verse.
+        if (line.includes('*>Verse')) {
+            flushCurrentSection();
+
+            mode = 'verse';
+            verseBuffers = {};
+            continue;
+        }
+
+        if (line.startsWith('*-')) {
+            flushCurrentSection();
+            break;
+        }
+
+        // Ignore interpretations, comments and barlines.
+        if (
+            line.startsWith('*') ||
+            line.startsWith('!') ||
+            line.startsWith('=')
+        ) {
+            continue;
+        }
+
+        const fields = line.split(/\t/);
+
+        if (mode === 'refrain') {
+            // Refrain text is carried by the first text spine.
+            const token = fields[textIndexes[0]];
+
+            if (token && token !== '.') {
+                refrainBuffer.push(token);
+            }
+
+        } else if (mode === 'verse') {
+
+            textIndexes.forEach(function(textIndex) {
+                const token = fields[textIndex];
+
+                if (token && token !== '.') {
+                    if (!verseBuffers[textIndex]) {
+                        verseBuffers[textIndex] = [];
+                    }
+
+                    verseBuffers[textIndex].push(token);
+                }
+            });
+        }
+    }
+
+    // Some files may end without *-.
+    flushCurrentSection();
+
+    return sections;
 }
 
 function renderLyrics(words, accentColor) {

@@ -433,4 +433,42 @@
   .stage-lyrics { padding: 16px 16px; }
 }
 
+/* Verse / refrain layout */
+.lyrics-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    column-gap: 18px;
+    align-items: start;
+    margin-bottom: 22px;
+}
+
+.lyrics-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: right;
+    padding-top: 5px;
+    opacity: 0.55;
+}
+
+.verse-text,
+.refrain-text {
+    line-height: 1.7;
+}
+
+.refrain-row {
+    margin-top: 6px;
+    margin-bottom: 28px;
+}
+
+.refrain-row .lyrics-label {
+    opacity: 1;
+    font-weight: 800;
+}
+
+.refrain-text {
+    font-weight: 700;
+}
+
 </style>
