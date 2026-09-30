@@ -335,6 +335,21 @@ function setTempoScale(scale, silent) {
   });
 }
 
+function changeTempoScale(scale) {
+  const kpBtn = document.getElementById('audiobutton-play');
+  const wasPlaying = kpBtn && kpBtn.classList.contains('is-playing');
+
+  if (wasPlaying) {
+    kpBtn.click();
+  }
+
+  setTempoScale(scale);
+
+  if (wasPlaying) {
+    kpBtn.click();
+  }
+}
+
 // ── Lyrics extraction ─────────────────────────────────────────────────────────
 
 function extractLyrics(kernText) {
