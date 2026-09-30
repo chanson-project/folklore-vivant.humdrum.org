@@ -339,15 +339,19 @@ function changeTempoScale(scale) {
   const kpBtn = document.getElementById('audiobutton-play');
   const wasPlaying = kpBtn && kpBtn.classList.contains('is-playing');
 
-  if (wasPlaying) {
-    kpBtn.click();
+  if (!wasPlaying) {
+    setTempoScale(scale);
+    return;
   }
 
-  setTempoScale(scale);
+  // Stop the current playback first
+  kpBtn.click();
 
-  if (wasPlaying) {
+  // Give KernPlayer a moment to clear the previous playback
+  setTimeout(function() {
+    setTempoScale(scale);
     kpBtn.click();
-  }
+  }, 200);
 }
 
 // ── Lyrics extraction ─────────────────────────────────────────────────────────
