@@ -22,15 +22,15 @@ nav_exclude: true
 
 <div id="edu-filters">
   <div id="edu-access-tabs">
-    <button class="edu-tab active" data-filter="all" data-i18n="edu.filter_all">All</button>
-    <button class="edu-tab" data-filter="free" data-i18n="edu.filter_free">Free</button>
-    <button class="edu-tab" data-filter="subscription" data-i18n="edu.filter_sub">Subscription</button>
+    <button class="edu-tab active" data-filter="all" data-i18n="edu.filter_all" title="Show all resources" aria-label="Show all resources">All</button>
+    <button class="edu-tab" data-filter="free" data-i18n="edu.filter_free" title="Show free resources" aria-label="Show free resources">Free</button>
+    <button class="edu-tab" data-filter="subscription" data-i18n="edu.filter_sub" title="Show subscription resources" aria-label="Show subscription resources">Subscription</button>
   </div>
   <div id="edu-category-tabs">
-    <button class="edu-cat active" data-cat="all" data-i18n="edu.cat_all">All categories</button>
-    <button class="edu-cat" data-cat="music" data-i18n="edu.cat_music">Music creation</button>
-    <button class="edu-cat" data-cat="language" data-i18n="edu.cat_language">Language learning</button>
-    <button class="edu-cat" data-cat="literacy" data-i18n="edu.cat_curriculum">Music literacy</button>
+    <button class="edu-cat active" data-cat="all" data-i18n="edu.cat_all" title="Show all categories" aria-label="Show all categories">All categories</button>
+    <button class="edu-cat" data-cat="music" data-i18n="edu.cat_music" title="Show music creation resources" aria-label="Show music creation resources">Music creation</button>
+    <button class="edu-cat" data-cat="language" data-i18n="edu.cat_language" title="Show language learning resources" aria-label="Show language learning resources">Language learning</button>
+    <button class="edu-cat" data-cat="literacy" data-i18n="edu.cat_curriculum" title="Show music literacy resources" aria-label="Show music literacy resources">Music literacy</button>
   </div>
 </div>
 
@@ -42,7 +42,7 @@ nav_exclude: true
   <div class="edu-suggestion-box">
     <div class="edu-suggestion-header">
       <span id="edu-suggestion-tool" class="edu-suggestion-tool"></span>
-      <button class="edu-suggestion-close" onclick="closeSuggestion()" aria-label="Close">✕</button>
+      <button class="edu-suggestion-close" onclick="closeSuggestion()" title="Close suggestion" aria-label="Close suggestion">✕</button>
     </div>
     <div id="edu-suggestion-content" class="edu-suggestion-content"></div>
   </div>

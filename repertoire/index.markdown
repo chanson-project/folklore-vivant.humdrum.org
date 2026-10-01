@@ -45,7 +45,7 @@ order: 3
         </div>
       </div>
       <div class="bottom-controls">
-        <button onclick="clearSearchFields()" data-i18n="rep.clear_all">Clear All</button>
+        <button onclick="clearSearchFields()" data-i18n="rep.clear_all" title="Clear all search fields" aria-label="Clear all search fields">Clear All</button>
         <a href="/guide/" class="help-btn" data-i18n-title="rep.user_guide" title="User Guide">?</a>
       </div>
     </div>

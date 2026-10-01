@@ -403,8 +403,8 @@
             </div>
           </div>
 
-          <button id="feedback-btn" class="page-link" onclick="openFeedbackModal()" data-i18n="nav.feedback">Feedback</button>
-          <button id="lang-toggle" onclick="setLang(window.LANG === 'en' ? 'fr' : 'en')">FR</button>
+          <button id="feedback-btn" class="page-link" onclick="openFeedbackModal()" data-i18n="nav.feedback" title="Send feedback" aria-label="Send feedback">Feedback</button>
+          <button id="lang-toggle" onclick="setLang(window.LANG === 'en' ? 'fr' : 'en')" title="Switch language" aria-label="Switch language">FR</button>
         </div>
       </nav>
     {%- endif -%}
@@ -427,8 +427,8 @@
     <p data-i18n="feedback.description">Do you see a mistake in a score? Disagree with an editorial choice? Let us know.</p>
     <textarea id="feedback-message" placeholder="Your message…" data-i18n-placeholder="feedback.placeholder"></textarea>
     <div class="feedback-modal-buttons">
-      <button onclick="closeFeedbackModal()" data-i18n="feedback.cancel">Cancel</button>
-      <button class="feedback-send" onclick="sendFeedback()" data-i18n="feedback.send">Send</button>
+      <button onclick="closeFeedbackModal()" data-i18n="feedback.cancel" title="Cancel feedback" aria-label="Cancel feedback">Cancel</button>
+      <button class="feedback-send" onclick="sendFeedback()" data-i18n="feedback.send" title="Send feedback" aria-label="Send feedback">Send</button>
     </div>
   </div>
 </div>

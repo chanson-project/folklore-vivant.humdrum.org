@@ -26,7 +26,7 @@ nav_exclude: true
 
   <div class="sing-toolbar">
     <input type="search" id="sing-search" class="sing-search" placeholder="Search / Rechercher…" oninput="filterSongs()">
-    <button class="sing-btn surprise-btn" onclick="pickRandom()">🎲 Surprise!</button>
+    <button class="sing-btn surprise-btn" onclick="pickRandom()" title="Pick a random song" aria-label="Pick a random song">🎲 Surprise!</button>
   </div>
 
   <div id="sing-count" class="sing-count"></div>
@@ -56,9 +56,9 @@ nav_exclude: true
 
   <!-- Player: prev · play/pause · next in one row -->
   <div class="stage-player">
-    <button id="stage-prev" class="sing-btn arrow-btn" onclick="prevSong()" aria-label="Previous song">‹</button>
-    <button id="stage-play-btn" class="play-btn" onclick="togglePlay()" disabled aria-label="Play">▶</button>
-    <button id="stage-next" class="sing-btn arrow-btn" onclick="nextSong()" aria-label="Next song">›</button>
+    <button id="stage-prev" class="sing-btn arrow-btn" onclick="prevSong()" title="Previous song" aria-label="Previous song">‹</button>
+    <button id="stage-play-btn" class="play-btn" onclick="togglePlay()" disabled title="Play or pause the song" aria-label="Play or pause the song">▶</button>
+    <button id="stage-next" class="sing-btn arrow-btn" onclick="nextSong()" title="Next song" aria-label="Next song">›</button>
   </div>
 
   <div id="kp-progress" class="kp-progress"><div id="kp-progress-fill" class="kp-progress-fill"></div></div>
@@ -93,7 +93,7 @@ nav_exclude: true
 
   <!-- Back link at the bottom so it doesn't interrupt the song view -->
   <div class="stage-back-wrap">
-    <button class="sing-btn back-btn" onclick="showGrid()">← All songs</button>
+    <button class="sing-btn back-btn" onclick="showGrid()" title="Return to all songs" aria-label="Return to all songs">← All songs</button>
   </div>
 
   <!-- Hidden KernPlayer DOM hooks -->
