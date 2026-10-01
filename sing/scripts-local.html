@@ -599,8 +599,24 @@ document.addEventListener('keydown', function(e) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
+function openSongFromHash() {
+  const hashId = window.location.hash.replace('#', '').trim();
+  if (!hashId) return;
+
+  const idx = SING_WORKS.findIndex(function(work) {
+    return work[FIELD.id] === hashId;
+  });
+
+  if (idx !== -1) {
+    selectSong(idx);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   buildSingGrid(SING_WORKS);
+  openSongFromHash();
 });
+
+window.addEventListener('hashchange', openSongFromHash);
 
 </script>
