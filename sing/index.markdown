@@ -89,6 +89,14 @@ nav_exclude: true
   </label>
 </div>
 
+<div class="stage-create-wrap">
+  <a id="stage-create-link"
+     class="sing-btn create-btn"
+     href="#">
+    ✨ Create your version
+  </a>
+</div>
+
   <div id="stage-lyrics" class="stage-lyrics"></div>
 
   <!-- Back link at the bottom so it doesn't interrupt the song view -->

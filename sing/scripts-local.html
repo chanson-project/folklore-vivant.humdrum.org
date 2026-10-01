@@ -122,6 +122,13 @@ function selectSong(idx) {
 
   document.getElementById('stage-title').textContent = title;
   document.getElementById('stage-comp').textContent  = comp;
+
+  const createLink = document.getElementById('stage-create-link');
+
+if (createLink) {
+  createLink.href = '/create/?song=' + encodeURIComponent(id);
+}
+
   const ytLink = document.getElementById('stage-youtube');
   const ytPlayer = document.getElementById('stage-youtube-player');
 
