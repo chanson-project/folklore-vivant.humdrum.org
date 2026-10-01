@@ -332,6 +332,11 @@ function initializeSearchNav() {
 	const backLink = document.getElementById("nav-back-link");
 	const searchUrl = localStorage.getItem("1520_search_url");
 	if (backLink && searchUrl) backLink.href = searchUrl;
+
+	const singLink = document.getElementById("nav-sing-link");
+if (singLink) {
+  singLink.href = "/sing/#" + currentId;
+}
 }
 
 

@@ -34,6 +34,11 @@ layout: work
   <span id="nav-position"></span>
   <button class="button nav-btn" id="nav-next" onclick="navigateSearchResult(1)" title="Next search result" aria-label="Next search result">&#9654;</button>
   <a id="nav-back-link" href="/repertoire/" class="button nav-btn" title="Return to search" aria-label="Return to search">&#8592; Search</a>
+  <a id="nav-sing-link"
+     href="/sing/"
+     class="button nav-btn"
+     title="Open Sing Along version"
+     aria-label="Open Sing Along version">🎤 Sing Along</a>
 </div>
 
 <div id="button-container" class="button-container">
