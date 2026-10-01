@@ -5,12 +5,59 @@ document.addEventListener('DOMContentLoaded', function() {
   const songId = params.get('song');
 
   const songIdEl = document.getElementById('create-song-id');
+  const titleEl = document.getElementById('create-title');
+  const composerEl = document.getElementById('create-composer');
+  const lyricsEl = document.getElementById('create-original-lyrics');
 
-  if (songId) {
-    songIdEl.textContent = songId;
-  } else {
+  if (!songId) {
     songIdEl.textContent = 'No song selected';
+    return;
   }
+
+  const work = CREATE_WORKS.find(function(w) {
+    return w['!!!id'] === songId;
+  });
+
+  if (!work) {
+    songIdEl.textContent = songId;
+    titleEl.textContent = 'Song not found';
+    return;
+  }
+
+  songIdEl.textContent = songId;
+  titleEl.textContent = work['!!!OTL@@FR'] || 'Untitled';
+  composerEl.textContent = work['!!!COM'] || '';
+
+  const filename = work['!!!file-name'] || '';
+  const prefix = songId.substring(0, 2).toUpperCase();
+  const dir = prefix === 'BC' ? 'bc' : 'eg';
+
+  if (!filename) {
+    lyricsEl.textContent = 'Lyrics unavailable.';
+    return;
+  }
+
+  const textFilename = filename.replace(/\.krn$/, '.txt');
+
+  const textUrl =
+    'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' +
+    dir + '/text/' + textFilename;
+
+  fetch(textUrl)
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error(response.status);
+      }
+
+      return response.text();
+    })
+    .then(function(text) {
+      lyricsEl.textContent = text.trim();
+    })
+    .catch(function(error) {
+      console.error('Could not load lyrics:', error);
+      lyricsEl.textContent = 'Lyrics unavailable.';
+    });
 });
 
 </script>

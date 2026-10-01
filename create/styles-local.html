@@ -7,4 +7,42 @@
   text-align: center;
 }
 
+.create-editor {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 32px auto;
+  text-align: left;
+}
+
+.create-column {
+  min-width: 0;
+}
+
+.create-original-lyrics,
+.create-your-lyrics {
+  width: 100%;
+  min-height: 420px;
+  padding: 24px;
+  box-sizing: border-box;
+  border-radius: 14px;
+  line-height: 1.7;
+}
+
+.create-original-lyrics {
+  white-space: pre-wrap;
+}
+
+.create-your-lyrics {
+  resize: vertical;
+  font: inherit;
+}
+
+@media (max-width: 750px) {
+  .create-editor {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
