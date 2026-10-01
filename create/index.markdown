@@ -5,7 +5,7 @@ nav_exclude: true
 ---
 
 <div class="create-back-wrap">
-  <a id="create-back-link" class="create-back-link" href="/sing/">
+  <a id="create-back-link" class="create-back-btn" href="/sing/">
     ← Back to song
   </a>
 </div>
@@ -16,11 +16,9 @@ nav_exclude: true
 
 <div class="create-page">
 
-  <h1>Create your own version ✨</h1>
-
-  <h2 id="create-title"></h2>
-  <p id="create-composer"></p>
-  <p id="create-song-id"></p>
+  <h1 id="create-title" class="create-song-title"></h1>
+  <p id="create-composer" class="create-composer"></p>
+  <p id="create-song-id" class="create-song-id"></p>
 
   <div class="create-editor">
 
@@ -41,19 +39,6 @@ nav_exclude: true
     </div>
 
   </div>
-
-</div>
-
-{% include_relative styles-local.html %}
-{% include_relative scripts-local.html %}
-
-</div>
-
-  <div id="create-original-lyrics">
-    Loading lyrics...
-  </div>
-
-</div>
 
 </div>
 
