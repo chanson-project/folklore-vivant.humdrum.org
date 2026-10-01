@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
   const songId = params.get('song');
 
+  const backLink = document.getElementById('create-back-link');
+
+  if (backLink && songId) {
+  backLink.href = '/sing/#' + encodeURIComponent(songId);
+  }
+
   const songIdEl = document.getElementById('create-song-id');
   const titleEl = document.getElementById('create-title');
   const composerEl = document.getElementById('create-composer');
@@ -52,8 +58,31 @@ document.addEventListener('DOMContentLoaded', function() {
       return response.text();
     })
     .then(function(text) {
-      lyricsEl.textContent = text.trim();
-    })
+  const lyrics = text.trim();
+  const lines = lyrics.split(/\r?\n/);
+
+  lyricsEl.innerHTML = '';
+
+  lines.forEach(function(line, index) {
+    const row = document.createElement('div');
+    row.className = 'create-lyric-row';
+
+    const originalLine = document.createElement('div');
+    originalLine.className = 'create-original-line';
+    originalLine.textContent = line || ' ';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'create-line-input';
+    input.placeholder = line ? 'Write your version...' : '';
+    input.dataset.line = index;
+
+    row.appendChild(originalLine);
+    row.appendChild(input);
+
+    lyricsEl.appendChild(row);
+  });
+})
     .catch(function(error) {
       console.error('Could not load lyrics:', error);
       lyricsEl.textContent = 'Lyrics unavailable.';
