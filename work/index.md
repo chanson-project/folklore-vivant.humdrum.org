@@ -30,20 +30,38 @@ layout: work
 <div id="external-info"></div>
 
 <div id="search-nav" class="hidden">
-  <button class="button nav-btn" id="nav-prev" onclick="navigateSearchResult(-1)">&#9664;</button>
+  <button class="button nav-btn" id="nav-prev" onclick="navigateSearchResult(-1)" title="Previous search result" aria-label="Previous search result">&#9664;</button>
   <span id="nav-position"></span>
-  <button class="button nav-btn" id="nav-next" onclick="navigateSearchResult(1)">&#9654;</button>
-  <a id="nav-back-link" href="/repertoire/" class="button nav-btn">&#8592; Search</a>
+  <button class="button nav-btn" id="nav-next" onclick="navigateSearchResult(1)" title="Next search result" aria-label="Next search result">&#9654;</button>
+  <a id="nav-back-link" href="/repertoire/" class="button nav-btn" title="Return to search" aria-label="Return to search">&#8592; Search</a>
 </div>
 
 <div id="button-container" class="button-container">
     <div id="audiobutton-container">
-        <span id="audiobutton-play" class="play">play</span>
+        <span id="audiobutton-play"
+              class="play"
+              title="Play or pause the chanson"
+              aria-label="Play or pause the chanson">play</span>
     </div>
+
     <div id="textSelect">
-       <div class="button show-text" onclick="displayText()" data-i18n="work.show_text">Show Text</div>
-       <div class="button show-deg" onclick="displayScaleDegrees()" data-i18n="work.show_deg">Show Scale Degrees</div>
-       <div class="button show-cadences" onclick="displayCadences()" data-i18n="work.show_cadences">Show Cadences</div>
+       <div class="button show-text"
+            onclick="displayText()"
+            data-i18n="work.show_text"
+            title="Show or hide the text"
+            aria-label="Show or hide the text">Show Text</div>
+
+       <div class="button show-deg"
+            onclick="displayScaleDegrees()"
+            data-i18n="work.show_deg"
+            title="Show or hide scale degrees"
+            aria-label="Show or hide scale degrees">Show Scale Degrees</div>
+
+       <div class="button show-cadences"
+            onclick="displayCadences()"
+            data-i18n="work.show_cadences"
+            title="Show or hide cadences"
+            aria-label="Show or hide cadences">Show Cadences</div>
     </div>
 </div>
 
