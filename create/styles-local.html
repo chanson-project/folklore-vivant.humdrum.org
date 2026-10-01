@@ -3,7 +3,26 @@
 
 
 .site-header .wrapper {
-  max-width: 1000px;
+  width: calc(100% - 64px);
+  max-width: none;
+  margin: 0 auto;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
+}
+
+.site-title {
+  flex-shrink: 0;
+}
+
+.site-nav {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.site-nav .trigger {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .create-page {
@@ -136,6 +155,11 @@
 }
 
 @media (max-width: 900px) {
+  .site-header .wrapper {
+    width: calc(100% - 32px);
+    flex-wrap: wrap;
+  }
+
   .create-editor {
     grid-template-columns: 1fr;
     width: calc(100vw - 32px);
