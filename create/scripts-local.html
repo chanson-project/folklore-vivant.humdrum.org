@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const backLink = document.getElementById('create-back-link');
 
   if (backLink && songId) {
-  backLink.href = '/sing/#' + encodeURIComponent(songId);
+    backLink.href = '/sing/#' + encodeURIComponent(songId);
   }
 
   const songIdEl = document.getElementById('create-song-id');
@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const textUrl =
     'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' +
-    dir + '/text/' + textFilename;
+    dir +
+    '/text/' +
+    textFilename;
 
   fetch(textUrl)
     .then(function(response) {
@@ -58,31 +60,38 @@ document.addEventListener('DOMContentLoaded', function() {
       return response.text();
     })
     .then(function(text) {
-  const lyrics = text.trim();
-  const lines = lyrics.split(/\r?\n/);
+      const lyrics = text.trim();
+      const lines = lyrics.split(/\r?\n/);
 
-  lyricsEl.innerHTML = '';
+      const originalLyricsEl =
+        document.getElementById('create-original-lyrics');
 
-  lines.forEach(function(line, index) {
-    const row = document.createElement('div');
-    row.className = 'create-lyric-row';
+      const yourLyricsEl =
+        document.getElementById('create-your-lyrics');
 
-    const originalLine = document.createElement('div');
-    originalLine.className = 'create-original-line';
-    originalLine.textContent = line || ' ';
+      originalLyricsEl.innerHTML = '';
+      yourLyricsEl.innerHTML = '';
 
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'create-line-input';
-    input.placeholder = line ? 'Write your version...' : '';
-    input.dataset.line = index;
+      lines.forEach(function(line, index) {
+        const originalLine = document.createElement('div');
+        originalLine.className = 'create-original-line';
+        originalLine.textContent = line || ' ';
 
-    row.appendChild(originalLine);
-    row.appendChild(input);
+        const inputWrap = document.createElement('div');
+        inputWrap.className = 'create-input-line';
 
-    lyricsEl.appendChild(row);
-  });
-})
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'create-line-input';
+        input.placeholder = line ? 'Try your own words...' : '';
+        input.dataset.line = index;
+
+        inputWrap.appendChild(input);
+
+        originalLyricsEl.appendChild(originalLine);
+        yourLyricsEl.appendChild(inputWrap);
+      });
+    })
     .catch(function(error) {
       console.error('Could not load lyrics:', error);
       lyricsEl.textContent = 'Lyrics unavailable.';

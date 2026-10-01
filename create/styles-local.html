@@ -2,68 +2,99 @@
 
 .create-page {
   max-width: 1100px;
-  margin: 60px auto;
-  padding: 0 24px;
-  text-align: center;
-}
-
-<style>
-
-.create-page {
-  max-width: 1100px;
-  margin: 60px auto;
-  padding: 0 24px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
   text-align: center;
 }
 
 .create-editor {
-  max-width: 1100px;
-  margin: 32px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  max-width: 1000px;
+  margin: 36px auto;
   text-align: left;
 }
 
-.create-editor-head {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 12px;
+.create-side {
+  padding: 28px;
+  background: #fff;
+  border: 2px solid #eee3cc;
+  border-radius: 24px;
 }
 
-.create-lyric-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
+.create-side-original {
+  background: #fffdf8;
+}
+
+.create-side-yours {
+  background: #fffaf2;
+}
+
+.create-side h3 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.4rem;
+}
+
+.create-side-subtitle {
+  margin: 6px 0 24px;
+  text-align: center;
+  opacity: 0.65;
+}
+
+.create-original-line,
+.create-input-line {
+  min-height: 48px;
+  margin-bottom: 10px;
+  display: flex;
   align-items: center;
-  margin-bottom: 12px;
 }
 
 .create-original-line {
-  padding: 10px 14px;
+  padding: 0 14px;
   line-height: 1.5;
 }
 
 .create-line-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 14px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  padding: 12px 16px;
+  border: 2px solid #e8e1d5;
+  border-radius: 12px;
+  background: #fff;
   font: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.create-line-input::placeholder {
+  opacity: 0.55;
 }
 
 .create-line-input:focus {
   outline: none;
-  border-color: #e7b84f;
+  border-color: #f2b663;
+  box-shadow: 0 0 0 3px rgba(242, 182, 99, 0.15);
+  transform: translateY(-1px);
+}
+
+.create-back-wrap {
+  max-width: 1000px;
+  margin: 28px auto 0;
+  padding: 0 24px;
+}
+
+.create-back-link {
+  text-decoration: none;
+  font-weight: 600;
 }
 
 @media (max-width: 750px) {
-  .create-editor-head {
-    display: none;
-  }
-
-  .create-lyric-row {
+  .create-editor {
     grid-template-columns: 1fr;
-    gap: 6px;
   }
 }
 
