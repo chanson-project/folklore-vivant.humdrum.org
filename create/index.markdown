@@ -30,5 +30,7 @@ nav_exclude: true
 
 </div>
 
+<script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+
 {% include_relative styles-local.html %}
 {% include_relative scripts-local.html %}
