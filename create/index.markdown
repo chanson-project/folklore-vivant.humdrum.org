@@ -4,7 +4,6 @@ title: Create
 nav_exclude: true
 ---
 
-<script type="text/x-humdrum" id="create-score-test"></script>
 <div id="create-score-test-output"></div>
 
 <div class="create-back-wrap">
@@ -25,7 +24,6 @@ nav_exclude: true
 
   <div class="create-editor">
 
-<script type="text/x-humdrum" id="create-score-test"></script>
 
   <div id="create-lines">
     Loading song...
