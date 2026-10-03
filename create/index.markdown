@@ -4,6 +4,9 @@ title: Create
 nav_exclude: true
 ---
 
+<script type="text/x-humdrum" id="create-score-test"></script>
+<div id="create-score-test-output"></div>
+
 <div class="create-back-wrap">
   <a id="create-back-link" class="create-back-btn" href="/sing/">
     ← Back to song
@@ -21,6 +24,8 @@ nav_exclude: true
   <p id="create-song-id" class="create-song-id"></p>
 
   <div class="create-editor">
+
+<script type="text/x-humdrum" id="create-score-test"></script>
 
   <div id="create-lines">
     Loading song...

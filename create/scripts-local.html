@@ -34,6 +34,44 @@ function extractKernSegments(kern) {
   return segments;
 }
 
+function extractKernHeader(kern) {
+  const rows = kern.split(/\r?\n/);
+  const header = [];
+
+  rows.forEach(function(row) {
+    if (!row) return;
+
+    if (row.includes('{')) return;
+
+    const cols = row.split('\t');
+    const melody = cols[0];
+    if (!melody) return;
+
+    if (
+      melody.startsWith('**') ||
+      melody.startsWith('*') ||
+      melody.startsWith('!') ||
+      melody.startsWith('=')  
+    ) {
+      header.push(melody);
+    }
+  });
+
+  return header;
+}
+
+function buildMiniKern(headerLines, segmentText) {
+  const segmentRows = segmentText.split(/\r?\n/).map(function(row) {
+    return row.split('\t')[0]; 
+  });
+
+  return [
+    ...headerLines,
+    ...segmentRows,
+    '*-'
+  ].join('\n');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
   const songId = params.get('song');
@@ -162,6 +200,11 @@ lines.forEach(function(line, index) {
     })
     .then(function(kern) {
   const segments = extractKernSegments(kern);
+
+  const headerLines = extractKernHeader(kern);
+  const firstSegmentKern = buildMiniKern(headerLines, segments[0]);
+
+  console.log('FIRST SEGMENT KERN:', firstSegmentKern);
 
   console.log('KERN FILE:', kern);
   console.log('SEGMENTS:', segments);
