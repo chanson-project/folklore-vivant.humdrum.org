@@ -6,7 +6,6 @@ function extractKernSegments(kern) {
 
   let current = [];
   let inside = false;
-  let foundPhraseMarkers = false;
 
   rows.forEach(function(row) {
     if (!row) return;
@@ -17,7 +16,6 @@ function extractKernSegments(kern) {
     if (!melody) return;
 
     if (melody.includes('{')) {
-      foundPhraseMarkers = true;
       inside = true;
       current = [];
     }
@@ -32,6 +30,9 @@ function extractKernSegments(kern) {
       inside = false;
     }
   });
+
+  return segments;
+}
 
 
   // Normal case: the song contains Humdrum phrase markers.
@@ -197,8 +198,26 @@ fetch(kernUrl)
   })
   .then(function(kern) {
 
-    const segments = extractKernSegments(kern);
-    const headerLines = extractKernHeader(kern);
+    const phraseSegments = extractKernSegments(kern);
+
+const hasPhraseMarkers = phraseSegments.length > 0;
+
+const segments = hasPhraseMarkers
+  ? phraseSegments
+  : [kern];
+
+const headerLines = hasPhraseMarkers
+  ? extractKernHeader(kern)
+  : [];
+
+console.log(
+  hasPhraseMarkers
+    ? 'Using Humdrum phrase markers.'
+    : 'No phrase markers found; using complete KERN file.'
+);
+
+console.log('SEGMENTS:', segments);
+console.log('SEGMENT COUNT:', segments.length);
 
     console.log('SEGMENTS:', segments);
     console.log('SEGMENT COUNT:', segments.length);
@@ -263,10 +282,9 @@ segments.forEach(function(segment, index) {
         return;
       }
 
-      const miniKern = buildMiniKern(
-        headerLines,
-        segment
-      );
+      const miniKern = hasPhraseMarkers
+  ? buildMiniKern(headerLines, segment)
+  : segment;
 
       console.log(
         'SCORE FOR LINE ' + (index + 1) + ':'
