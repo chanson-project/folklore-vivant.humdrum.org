@@ -22,6 +22,25 @@ nav_exclude: true
   <p id="create-composer" class="create-composer"></p>
   <p id="create-song-id" class="create-song-id"></p>
 
+  <div class="create-title-editor">
+  <div class="create-title-editor-label">Title</div>
+
+  <div class="create-title-original">
+    <span class="create-title-label">Original:</span>
+    <span id="create-original-title"></span>
+  </div>
+
+  <div class="create-title-input-wrap">
+    <label for="create-user-title" class="create-title-label">Your title:</label>
+    <input
+      id="create-user-title"
+      class="create-title-input"
+      type="text"
+      placeholder="Write your title..."
+    >
+  </div>
+</div>
+
   <div class="create-editor">
 
 

@@ -105,8 +105,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   songIdEl.textContent = songId;
-  titleEl.textContent = work['!!!OTL@@FR'] || 'Untitled';
-  composerEl.textContent = work['!!!COM'] || '';
+
+const originalTitle = work['!!!OTL@@FR'] || 'Untitled';
+
+titleEl.textContent = originalTitle;
+composerEl.textContent = work['!!!COM'] || '';
+
+const originalTitleEl = document.getElementById('create-original-title');
+
+if (originalTitleEl) {
+  originalTitleEl.textContent = originalTitle;
+}
 
   const filename = work['!!!file-name'] || '';
   const prefix = songId.substring(0, 2).toUpperCase();
