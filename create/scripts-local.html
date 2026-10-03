@@ -79,15 +79,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const songId = params.get('song');
 
   const backLink = document.getElementById('create-back-link');
+  const songIdEl = document.getElementById('create-song-id');
+  const titleEl = document.getElementById('create-title');
+  const composerEl = document.getElementById('create-composer');
+  const linesEl = document.getElementById('create-lines');
 
   if (backLink && songId) {
     backLink.href = '/sing/#' + encodeURIComponent(songId);
   }
-
-  const songIdEl = document.getElementById('create-song-id');
-  const titleEl = document.getElementById('create-title');
-  const composerEl = document.getElementById('create-composer');
-  const lyricsEl = document.getElementById('create-lines');
 
   if (!songId) {
     songIdEl.textContent = 'No song selected';
@@ -106,153 +105,259 @@ document.addEventListener('DOMContentLoaded', function() {
 
   songIdEl.textContent = songId;
 
-const originalTitle = work['!!!OTL@@FR'] || 'Untitled';
+  const originalTitle = work['!!!OTL@@FR'] || 'Untitled';
 
-titleEl.textContent = originalTitle;
-composerEl.textContent = work['!!!COM'] || '';
+  titleEl.textContent = originalTitle;
+  composerEl.textContent = work['!!!COM'] || '';
 
-const originalTitleEl = document.getElementById('create-original-title');
+  const originalTitleEl = document.getElementById('create-original-title');
 
-if (originalTitleEl) {
-  originalTitleEl.textContent = originalTitle;
-}
+  if (originalTitleEl) {
+    originalTitleEl.textContent = originalTitle;
+  }
 
   const filename = work['!!!file-name'] || '';
   const prefix = songId.substring(0, 2).toUpperCase();
   const dir = prefix === 'BC' ? 'bc' : 'eg';
 
   if (!filename) {
-    lyricsEl.textContent = 'Lyrics unavailable.';
+    linesEl.textContent = 'Lyrics unavailable.';
     return;
   }
 
   const textFilename = filename.replace(/\.krn$/, '.txt');
 
+  const baseUrl =
+    'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/';
+
   const textUrl =
-    'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' +
+    baseUrl +
     dir +
     '/text/' +
     textFilename;
 
-    const kernUrl =
-  'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' +
-  dir +
-  '/kern/' +
-  filename;
+  const kernUrl =
+    baseUrl +
+    dir +
+    '/kern/' +
+    filename;
 
-  fetch(textUrl)
-    .then(function(response) {
+
+  // Load lyrics and score together.
+  Promise.all([
+    fetch(textUrl).then(function(response) {
       if (!response.ok) {
-        throw new Error(response.status);
+        throw new Error('Lyrics HTTP ' + response.status);
+      }
+
+      return response.text();
+    }),
+
+    fetch(kernUrl).then(function(response) {
+      if (!response.ok) {
+        throw new Error('KERN HTTP ' + response.status);
       }
 
       return response.text();
     })
-    .then(function(text) {
-      const lyrics = text.trim();
-      const lines = lyrics.split(/\r?\n/);
+  ])
+  .then(function(results) {
 
-      const linesEl = document.getElementById('create-lines');
+    const text = results[0];
+    const kern = results[1];
 
-linesEl.innerHTML = '';
+    let lyricLines = text
+      .trim()
+      .split(/\r?\n/)
+      .map(function(line) {
+        return line.trim();
+      })
+      .filter(function(line) {
+        return line.length > 0;
+      });
 
-lines.forEach(function(line, index) {
+    const segments = extractKernSegments(kern);
+    const headerLines = extractKernHeader(kern);
 
-  const lineBlock = document.createElement('div');
-  lineBlock.className = 'create-line-block';
+    console.log('LYRIC LINES:', lyricLines);
+    console.log('LYRIC COUNT:', lyricLines.length);
 
-  // Line heading
-  const header = document.createElement('div');
-  header.className = 'create-line-header';
-  header.textContent = 'Line ' + (index + 1);
+    console.log('SEGMENTS:', segments);
+    console.log('SEGMENT COUNT:', segments.length);
 
-  // Music area — we will populate this later from {...} segments
-  const music = document.createElement('div');
-  music.className = 'create-line-music';
-  music.dataset.line = index;
 
-  // Original lyrics
-  const originalLine = document.createElement('div');
-  originalLine.className = 'create-original-line';
-  originalLine.textContent = line || ' ';
+    /*
+     * Some text files contain the song title as the first line.
+     *
+     * Only remove it when:
+     *
+     * 1. There is exactly one more text line than music segment.
+     * 2. The first line matches the metadata title.
+     *
+     * This prevents us from accidentally deleting a real first lyric.
+     */
+    function normalizeText(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, ' ')
+        .trim()
+        .replace(/\s+/g, ' ');
+    }
 
-  // User's version
-  const inputWrap = document.createElement('div');
-  inputWrap.className = 'create-input-line';
+    if (
+      lyricLines.length === segments.length + 1 &&
+      normalizeText(lyricLines[0]) === normalizeText(originalTitle)
+    ) {
+      console.log('Removing title from lyric lines:', lyricLines[0]);
+      lyricLines.shift();
+    }
 
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.className = 'create-line-input';
-  input.placeholder = line ? 'Try your own words...' : '';
-  input.dataset.line = index;
 
-  inputWrap.appendChild(input);
+    // Clear "Loading song..."
+    linesEl.innerHTML = '';
 
-  lineBlock.appendChild(header);
-  lineBlock.appendChild(music);
-  lineBlock.appendChild(originalLine);
-  lineBlock.appendChild(inputWrap);
 
-  linesEl.appendChild(lineBlock);
-});
-    })
-        .catch(function(error) {
-      console.error('Could not load lyrics:', error);
-      lyricsEl.textContent = 'Lyrics unavailable.';
+    // Create one editor block for every lyric line.
+    lyricLines.forEach(function(line, index) {
+
+      const lineBlock = document.createElement('div');
+      lineBlock.className = 'create-line-block';
+
+
+      // Line heading
+      const header = document.createElement('div');
+      header.className = 'create-line-header';
+      header.textContent = 'Line ' + (index + 1);
+
+
+      // Music
+      const music = document.createElement('div');
+      music.className = 'create-line-music';
+      music.dataset.line = index;
+
+
+      // Original lyric
+      const originalLine = document.createElement('div');
+      originalLine.className = 'create-original-line';
+
+      const originalLabel = document.createElement('strong');
+      originalLabel.textContent = 'Original: ';
+
+      const originalText = document.createElement('span');
+      originalText.textContent = line;
+
+      originalLine.appendChild(originalLabel);
+      originalLine.appendChild(originalText);
+
+
+      // User version
+      const inputWrap = document.createElement('div');
+      inputWrap.className = 'create-input-line';
+
+      const input = document.createElement('input');
+
+      input.type = 'text';
+      input.className = 'create-line-input';
+      input.placeholder = 'Try your own words...';
+      input.dataset.line = index;
+
+      inputWrap.appendChild(input);
+
+
+      lineBlock.appendChild(header);
+      lineBlock.appendChild(music);
+      lineBlock.appendChild(originalLine);
+      lineBlock.appendChild(inputWrap);
+
+      linesEl.appendChild(lineBlock);
     });
 
-  fetch(kernUrl)
-    .then(function(response) {
-      if (!response.ok) {
-        throw new Error(response.status);
+
+    // Render corresponding score segment for every line.
+    segments.forEach(function(segment, index) {
+
+      const musicBox = document.querySelector(
+        '.create-line-music[data-line="' + index + '"]'
+      );
+
+      if (!musicBox) {
+        console.warn(
+          'No lyric line exists for music segment ' + index
+        );
+
+        return;
       }
 
-      return response.text();
-    })
-    .then(function(kern) {
-  const segments = extractKernSegments(kern);
+      const miniKern = buildMiniKern(
+        headerLines,
+        segment
+      );
 
-  console.log('KERN FILE:', kern);
-  console.log('SEGMENTS:', segments);
-  console.log('SEGMENT COUNT:', segments.length);
+      console.log(
+        'SCORE FOR LINE ' + (index + 1) + ':'
+      );
 
-  if (segments.length === 0) {
-    console.error('No melody segments found.');
-    return;
-  }
+      console.log(miniKern);
 
-  const headerLines = extractKernHeader(kern);
-  const firstSegmentKern = buildMiniKern(headerLines, segments[0]);
 
-  console.log('FIRST SEGMENT KERN:');
-  console.log(firstSegmentKern);
+      const scoreSource =
+        document.createElement('script');
 
-  const musicBox = document.querySelector(
-  '.create-line-music[data-line="0"]'
-);
+      scoreSource.type = 'text/x-humdrum';
 
-if (musicBox) {
-  const scoreSource = document.createElement('script');
+      scoreSource.id =
+        'create-score-' + index;
 
-  scoreSource.type = 'text/x-humdrum';
-  scoreSource.id = 'create-score-0';
-  scoreSource.textContent = firstSegmentKern;
+      scoreSource.textContent = miniKern;
 
-  musicBox.innerHTML = '';
-  musicBox.appendChild(scoreSource);
 
-  if (typeof displayHumdrum === 'function') {
-    displayHumdrum({
-      source: 'create-score-0'
+      musicBox.innerHTML = '';
+
+      musicBox.appendChild(scoreSource);
+
+
+      if (typeof displayHumdrum === 'function') {
+
+        displayHumdrum({
+          source: scoreSource.id
+        });
+
+      } else {
+
+        console.error(
+          'displayHumdrum is not available.'
+        );
+
+      }
     });
-  } else {
-    console.error('displayHumdrum is not available.');
-  }
-}
-})
-    .catch(function(error) {
-      console.error('Could not load kern:', error);
-    });
+
+
+    if (lyricLines.length !== segments.length) {
+
+      console.warn(
+        'Lyrics/music count mismatch:',
+        lyricLines.length,
+        'lyrics vs',
+        segments.length,
+        'music segments'
+      );
+
+    }
+
+  })
+  .catch(function(error) {
+
+    console.error(
+      'Could not load song:',
+      error
+    );
+
+    linesEl.textContent =
+      'Song data unavailable.';
+
+  });
 
 });
 
