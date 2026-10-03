@@ -218,19 +218,28 @@ lines.forEach(function(line, index) {
   console.log('FIRST SEGMENT KERN:');
   console.log(firstSegmentKern);
 
-  const testScore = document.getElementById('create-score-test');
+  const musicBox = document.querySelector(
+  '.create-line-music[data-line="0"]'
+);
 
-  if (testScore) {
-    testScore.textContent = firstSegmentKern;
+if (musicBox) {
+  const scoreSource = document.createElement('script');
 
-    if (typeof displayHumdrum === 'function') {
-      displayHumdrum({
-  source: 'create-score-test'
-});
-    } else {
-      console.error('displayHumdrum is not available.');
-    }
+  scoreSource.type = 'text/x-humdrum';
+  scoreSource.id = 'create-score-0';
+  scoreSource.textContent = firstSegmentKern;
+
+  musicBox.innerHTML = '';
+  musicBox.appendChild(scoreSource);
+
+  if (typeof displayHumdrum === 'function') {
+    displayHumdrum({
+      source: 'create-score-0'
+    });
+  } else {
+    console.error('displayHumdrum is not available.');
   }
+}
 })
     .catch(function(error) {
       console.error('Could not load kern:', error);
