@@ -1,5 +1,39 @@
 <script>
 
+function extractKernSegments(kern) {
+  const rows = kern.split(/\r?\n/);
+  const segments = [];
+
+  let current = [];
+  let inside = false;
+
+  rows.forEach(function(row) {
+    if (!row) return;
+
+    const cols = row.split('\t');
+    const melody = cols[0];
+
+    if (!melody) return;
+
+    if (melody.includes('{')) {
+      inside = true;
+      current = [];
+    }
+
+    if (inside) {
+      current.push(row);
+    }
+
+    if (melody.includes('}') && inside) {
+      segments.push(current.join('\n'));
+      current = [];
+      inside = false;
+    }
+  });
+
+  return segments;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
   const songId = params.get('song');
@@ -127,8 +161,12 @@ lines.forEach(function(line, index) {
       return response.text();
     })
     .then(function(kern) {
-      console.log('KERN FILE:', kern);
-    })
+  const segments = extractKernSegments(kern);
+
+  console.log('KERN FILE:', kern);
+  console.log('SEGMENTS:', segments);
+  console.log('SEGMENT COUNT:', segments.length);
+})
     .catch(function(error) {
       console.error('Could not load kern:', error);
     });
