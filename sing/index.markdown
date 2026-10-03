@@ -92,7 +92,8 @@ nav_exclude: true
 <div class="stage-create-wrap">
   <a id="stage-create-link"
      class="sing-btn create-btn"
-     href="#">
+     href="#"
+     data-i18n="sing.create_version">
     ✨ Create your version
   </a>
 </div>

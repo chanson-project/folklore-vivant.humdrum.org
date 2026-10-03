@@ -130,6 +130,9 @@
 @work.cadence_phrygian: Phrygian
 @work.cadence_none: No cadences detected
 
+@ sing along page
+@sing.create_version: ✨ Create your version
+
 @ about page
 @about.heading: about
 @about.h_project: Project
@@ -450,6 +453,9 @@
 @work.cadence_authentic: Authentique
 @work.cadence_phrygian: Phrygien
 @work.cadence_none: Aucune cadence détectée
+
+@ page chantons
+@sing.create_version: ✨ Composez!
 
 @ page à propos
 @about.heading: À propos
