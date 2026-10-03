@@ -6,6 +6,7 @@ function extractKernSegments(kern) {
 
   let current = [];
   let inside = false;
+  let foundPhraseMarkers = false;
 
   rows.forEach(function(row) {
     if (!row) return;
@@ -16,6 +17,7 @@ function extractKernSegments(kern) {
     if (!melody) return;
 
     if (melody.includes('{')) {
+      foundPhraseMarkers = true;
       inside = true;
       current = [];
     }
@@ -30,6 +32,46 @@ function extractKernSegments(kern) {
       inside = false;
     }
   });
+
+
+  // Normal case: the song contains Humdrum phrase markers.
+  if (foundPhraseMarkers && segments.length > 0) {
+    return segments;
+  }
+
+
+  /*
+   * Fallback:
+   * Some songs do not contain {...} phrase markers.
+   * In that case, use the complete musical body as one phrase.
+   */
+  const body = [];
+  let started = false;
+
+  rows.forEach(function(row) {
+    if (!row) return;
+
+    const cols = row.split('\t');
+    const melody = cols[0];
+
+    if (!melody) return;
+
+    // Start when actual musical data begins.
+    if (!started && /^[=0-9.rqabcdefgABCDEFG#\-()[\]{}]/.test(melody)) {
+      started = true;
+    }
+
+    if (!started) return;
+
+    // Do not copy final spine terminators.
+    if (melody === '*-') return;
+
+    body.push(row);
+  });
+
+  if (body.length > 0) {
+    segments.push(body.join('\n'));
+  }
 
   return segments;
 }
