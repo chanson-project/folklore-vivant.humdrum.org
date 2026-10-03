@@ -132,6 +132,8 @@
 
 @ sing along page
 @sing.create_version: ✨ Create your version
+@sing.compose: Create
+
 
 @ about page
 @about.heading: about
@@ -456,6 +458,8 @@
 
 @ page chantons
 @sing.create_version: ✨ Composez!
+@sing.compose: Composez!
+
 
 @ page à propos
 @about.heading: À propos

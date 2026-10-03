@@ -337,6 +337,12 @@ function initializeSearchNav() {
 if (singLink) {
   singLink.href = "/sing/#" + currentId;
 }
+
+	const composeLink = document.getElementById("nav-compose-link");
+if (composeLink) {
+  composeLink.href = "/create/?song=" + currentId.toLowerCase();
+}
+
 }
 
 

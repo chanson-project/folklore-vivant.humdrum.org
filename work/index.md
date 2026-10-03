@@ -35,11 +35,23 @@ layout: work
   <button class="button nav-btn" id="nav-next" onclick="navigateSearchResult(1)" title="Next search result" aria-label="Next search result">&#9654;</button>
   <a id="nav-back-link" href="/repertoire/" class="button nav-btn" title="Return to search" aria-label="Return to search">&#8592; Search</a>
   <a id="nav-sing-link"
-     href="/sing/"
-     class="button nav-btn"
-     title="Open Sing Along version"
-     aria-label="Open Sing Along version">🎤 Sing Along</a>
+   href="/sing/"
+   class="button nav-btn"
+   title="Open Sing Along version"
+   aria-label="Open Sing Along version">
+   🎤 <span data-i18n="nav.sing_along">Sing Along!</span>
+</a>
+
+<a id="nav-compose-link"
+   href="/create/"
+   class="button nav-btn"
+   title="Create your own version"
+   aria-label="Create your own version">
+   ✏️ <span data-i18n="sing.compose">Create</span>
+</a>
+
 </div>
+
 
 <div id="button-container" class="button-container">
     <div id="audiobutton-container">
