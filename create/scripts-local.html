@@ -38,24 +38,26 @@ function extractKernHeader(kern) {
   const rows = kern.split(/\r?\n/);
   const header = [];
 
-  rows.forEach(function(row) {
-    if (!row) return;
-
-    if (row.includes('{')) return;
+  for (const row of rows) {
+    if (!row) continue;
 
     const cols = row.split('\t');
     const melody = cols[0];
-    if (!melody) return;
+
+    if (!melody) continue;
+
+    if (melody.includes('{')) {
+      break;
+    }
 
     if (
       melody.startsWith('**') ||
       melody.startsWith('*') ||
-      melody.startsWith('!') ||
-      melody.startsWith('=')  
+      melody.startsWith('!')
     ) {
       header.push(melody);
     }
-  });
+  }
 
   return header;
 }
@@ -201,14 +203,32 @@ lines.forEach(function(line, index) {
     .then(function(kern) {
   const segments = extractKernSegments(kern);
 
-  const headerLines = extractKernHeader(kern);
-  const firstSegmentKern = buildMiniKern(headerLines, segments[0]);
-
-  console.log('FIRST SEGMENT KERN:', firstSegmentKern);
-
   console.log('KERN FILE:', kern);
   console.log('SEGMENTS:', segments);
   console.log('SEGMENT COUNT:', segments.length);
+
+  if (segments.length === 0) {
+    console.error('No melody segments found.');
+    return;
+  }
+
+  const headerLines = extractKernHeader(kern);
+  const firstSegmentKern = buildMiniKern(headerLines, segments[0]);
+
+  console.log('FIRST SEGMENT KERN:');
+  console.log(firstSegmentKern);
+
+  const testScore = document.getElementById('create-score-test');
+
+  if (testScore) {
+    testScore.textContent = firstSegmentKern;
+
+    if (typeof displayHumdrum === 'function') {
+      displayHumdrum({});
+    } else {
+      console.error('displayHumdrum is not available.');
+    }
+  }
 })
     .catch(function(error) {
       console.error('Could not load kern:', error);
