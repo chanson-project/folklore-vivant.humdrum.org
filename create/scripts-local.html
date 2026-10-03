@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const songIdEl = document.getElementById('create-song-id');
   const titleEl = document.getElementById('create-title');
   const composerEl = document.getElementById('create-composer');
-  const lyricsEl = document.getElementById('create-original-lyrics');
+  const lyricsEl = document.getElementById('create-lines');
 
   if (!songId) {
     songIdEl.textContent = 'No song selected';
@@ -51,6 +51,12 @@ document.addEventListener('DOMContentLoaded', function() {
     '/text/' +
     textFilename;
 
+    const kernUrl =
+  'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/' +
+  dir +
+  '/' +
+  filename;
+
   fetch(textUrl)
     .then(function(response) {
       if (!response.ok) {
@@ -63,39 +69,70 @@ document.addEventListener('DOMContentLoaded', function() {
       const lyrics = text.trim();
       const lines = lyrics.split(/\r?\n/);
 
-      const originalLyricsEl =
-        document.getElementById('create-original-lyrics');
+      const linesEl = document.getElementById('create-lines');
 
-      const yourLyricsEl =
-        document.getElementById('create-your-lyrics');
+linesEl.innerHTML = '';
 
-      originalLyricsEl.innerHTML = '';
-      yourLyricsEl.innerHTML = '';
+lines.forEach(function(line, index) {
 
-      lines.forEach(function(line, index) {
-        const originalLine = document.createElement('div');
-        originalLine.className = 'create-original-line';
-        originalLine.textContent = line || ' ';
+  const lineBlock = document.createElement('div');
+  lineBlock.className = 'create-line-block';
 
-        const inputWrap = document.createElement('div');
-        inputWrap.className = 'create-input-line';
+  // Line heading
+  const header = document.createElement('div');
+  header.className = 'create-line-header';
+  header.textContent = 'Line ' + (index + 1);
 
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'create-line-input';
-        input.placeholder = line ? 'Try your own words...' : '';
-        input.dataset.line = index;
+  // Music area — we will populate this later from {...} segments
+  const music = document.createElement('div');
+  music.className = 'create-line-music';
+  music.dataset.line = index;
 
-        inputWrap.appendChild(input);
+  // Original lyrics
+  const originalLine = document.createElement('div');
+  originalLine.className = 'create-original-line';
+  originalLine.textContent = line || ' ';
 
-        originalLyricsEl.appendChild(originalLine);
-        yourLyricsEl.appendChild(inputWrap);
-      });
+  // User's version
+  const inputWrap = document.createElement('div');
+  inputWrap.className = 'create-input-line';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'create-line-input';
+  input.placeholder = line ? 'Try your own words...' : '';
+  input.dataset.line = index;
+
+  inputWrap.appendChild(input);
+
+  lineBlock.appendChild(header);
+  lineBlock.appendChild(music);
+  lineBlock.appendChild(originalLine);
+  lineBlock.appendChild(inputWrap);
+
+  linesEl.appendChild(lineBlock);
+});
     })
-    .catch(function(error) {
+        .catch(function(error) {
       console.error('Could not load lyrics:', error);
       lyricsEl.textContent = 'Lyrics unavailable.';
     });
+
+  fetch(kernUrl)
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error(response.status);
+      }
+
+      return response.text();
+    })
+    .then(function(kern) {
+      console.log('KERN FILE:', kern);
+    })
+    .catch(function(error) {
+      console.error('Could not load kern:', error);
+    });
+
 });
 
 </script>

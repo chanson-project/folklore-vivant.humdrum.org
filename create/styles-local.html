@@ -69,16 +69,8 @@ main.page-content {
 }
 
 .create-editor {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 32px;
-
-  width: min(1200px, calc(100vw - 80px));
-  max-width: none;
-
-  margin: 34px 50% 0;
-  transform: translateX(-50%);
-
+  width: min(1000px, calc(100vw - 48px));
+  margin: 34px auto 0;
   text-align: left;
 }
 
@@ -112,8 +104,7 @@ main.page-content {
 
 .create-original-line,
 .create-input-line {
-  min-height: 56px;
-  margin-bottom: 12px;
+  min-height: 48px;
   display: flex;
   align-items: center;
 }
@@ -147,14 +138,37 @@ main.page-content {
   box-shadow: 0 0 0 3px rgba(239, 179, 95, 0.15);
 }
 
-@media (max-width: 900px) {
 
 
-  .create-editor {
-    grid-template-columns: 1fr;
-    width: calc(100vw - 32px);
-    gap: 20px;
-  }
+.create-line-block {
+  margin-bottom: 24px;
+  padding: 24px 26px;
+  background: #f6efe1;
+  border: 2px solid #e1cfaa;
+  border-radius: 22px;
 }
+
+.create-line-header {
+  margin-bottom: 14px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.create-line-music {
+  min-height: 40px;
+  margin-bottom: 14px;
+}
+
+.create-original-line {
+  margin-bottom: 12px;
+  padding: 0;
+  line-height: 1.55;
+  font-size: 1.08rem;
+}
+
+.create-input-line {
+  margin-bottom: 0;
+}
+
 
 </style>

@@ -22,23 +22,11 @@ nav_exclude: true
 
   <div class="create-editor">
 
-    <div class="create-side create-side-original">
-      <h3>👀 Sing it like this</h3>
-      <p class="create-side-subtitle">Follow the original words</p>
-
-      <div id="create-original-lyrics">
-        Loading lyrics...
-      </div>
-    </div>
-
-    <div class="create-side create-side-yours">
-      <h3>🌟 Now make it yours!</h3>
-      <p class="create-side-subtitle">Write your own words</p>
-
-      <div id="create-your-lyrics"></div>
-    </div>
-
+  <div id="create-lines">
+    Loading song...
   </div>
+
+</div>
 
 </div>
 
