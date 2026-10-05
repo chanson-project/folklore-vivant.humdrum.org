@@ -4,6 +4,8 @@ title: Create
 nav_exclude: true
 ---
 
+
+
 <div id="create-score-test-output"></div>
 
 <div class="create-back-wrap">
@@ -21,6 +23,21 @@ nav_exclude: true
   <h1 id="create-title" class="create-song-title"></h1>
   <p id="create-composer" class="create-composer"></p>
   <p id="create-song-id" class="create-song-id"></p>
+
+  <div class="create-tempo-control">
+  <label for="create-tempo-input">Tempo</label>
+
+  <input
+    type="number"
+    id="create-tempo-input"
+    min="40"
+    max="240"
+    step="1"
+    value="120"
+  >
+
+  <span>BPM</span>
+</div>
 
   <div class="create-title-editor">
 

@@ -68,6 +68,32 @@ main.page-content {
   font-weight: 600;
 }
 
+.create-tempo-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+  font-weight: 700;
+}
+
+#create-tempo-input {
+  width: 76px;
+  box-sizing: border-box;
+  padding: 7px 8px;
+  border: 2px solid #dfcfb0;
+  border-radius: 10px;
+  background: #fffdf8;
+  font: inherit;
+  text-align: center;
+}
+
+#create-tempo-input:focus {
+  outline: none;
+  border-color: #efb35f;
+  box-shadow: 0 0 0 3px rgba(239, 179, 95, 0.15);
+}
+
 .create-editor {
   width: min(1000px, calc(100vw - 48px));
   margin: 34px auto 0;
