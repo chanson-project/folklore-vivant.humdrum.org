@@ -91,19 +91,48 @@ function buildMiniKern(headerLines, segmentText) {
 // Temporary playback function.
 // For now this only confirms that the correct phrase KERN is selected.
 function playCreatePhrase(kern, button) {
-  console.log('Phrase ready to play:');
-  console.log(kern);
 
-  if (button) {
-    console.log(
-      'Clicked button for phrase:',
-      Number(button.dataset.line) + 1
-    );
+  if (!kern) {
+    console.error('No KERN data available for this phrase.');
+    return;
   }
 
-  // Actual playback code will be added here next.
-}
+  if (typeof KernPlayer === 'undefined') {
+    console.error('KernPlayer is not available.');
+    return;
+  }
 
+  const kpBtn =
+    document.getElementById('audiobutton-play');
+
+  if (!kpBtn) {
+    console.error('KernPlayer play button was not found.');
+    return;
+  }
+
+
+  // Stop anything currently playing.
+  KernPlayer.stop();
+
+
+  // Load only this phrase.
+  KernPlayer.load(kern);
+
+
+  console.log(
+    'Playing Phrase ' +
+    (Number(button.dataset.line) + 1)
+  );
+
+
+  // Start playback through KernPlayer's hidden button.
+  setTimeout(function() {
+
+    kpBtn.click();
+
+  }, 100);
+
+}
 
 document.addEventListener('DOMContentLoaded', function() {
 
