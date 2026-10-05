@@ -23,36 +23,73 @@ nav_exclude: true
   <p id="create-song-id" class="create-song-id"></p>
 
   <div class="create-title-editor">
-  <div class="create-title-editor-label">Title</div>
 
-  <div class="create-title-original">
-    <span class="create-title-label">Original:</span>
-    <span id="create-original-title"></span>
+    <div class="create-title-editor-label">
+      Title
+    </div>
+
+    <div class="create-title-original">
+      <span class="create-title-label">
+        Original:
+      </span>
+
+      <span id="create-original-title"></span>
+    </div>
+
+    <div class="create-title-input-wrap">
+
+      <label
+        for="create-user-title"
+        class="create-title-label">
+        Your title:
+      </label>
+
+      <input
+        id="create-user-title"
+        class="create-title-input"
+        type="text"
+        placeholder="Write your title..."
+      >
+
+    </div>
+
   </div>
 
-  <div class="create-title-input-wrap">
-    <label for="create-user-title" class="create-title-label">Your title:</label>
-    <input
-      id="create-user-title"
-      class="create-title-input"
-      type="text"
-      placeholder="Write your title..."
-    >
-  </div>
-</div>
 
   <div class="create-editor">
 
+    <div id="create-lines">
+      Loading song...
+    </div>
 
-  <div id="create-lines">
-    Loading song...
   </div>
 
 </div>
 
+
+<!-- Hidden KernPlayer DOM hooks -->
+<div
+  id="audiobutton-container"
+  style="
+    position:absolute;
+    width:0;
+    height:0;
+    overflow:hidden;
+    opacity:0;
+    pointer-events:none;
+  "
+>
+  <span id="audiobutton-play"></span>
 </div>
 
+
+<!-- Humdrum score rendering -->
 <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+
+
+<!-- Humdrum audio player -->
+{% include scripts/kern-player.html %}
+
 
 {% include_relative styles-local.html %}
 {% include_relative scripts-local.html %}
