@@ -63,6 +63,7 @@ function extractKernHeader(kern) {
   return header;
 }
 
+
 function buildMiniKern(headerLines, segmentText) {
   const segmentRows = segmentText.split(/\r?\n/);
 
@@ -86,215 +87,462 @@ function buildMiniKern(headerLines, segmentText) {
   ].join('\n');
 }
 
+
+// Temporary playback function.
+// For now this only confirms that the correct phrase KERN is selected.
+function playCreatePhrase(kern, button) {
+  console.log('Phrase ready to play:');
+  console.log(kern);
+
+  if (button) {
+    console.log(
+      'Clicked button for phrase:',
+      Number(button.dataset.line) + 1
+    );
+  }
+
+  // Actual playback code will be added here next.
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
+
   const params = new URLSearchParams(window.location.search);
   const songId = params.get('song');
 
-  const backLink = document.getElementById('create-back-link');
-  const songIdEl = document.getElementById('create-song-id');
-  const titleEl = document.getElementById('create-title');
-  const composerEl = document.getElementById('create-composer');
-  const linesEl = document.getElementById('create-lines');
+  const backLink =
+    document.getElementById('create-back-link');
+
+  const songIdEl =
+    document.getElementById('create-song-id');
+
+  const titleEl =
+    document.getElementById('create-title');
+
+  const composerEl =
+    document.getElementById('create-composer');
+
+  const linesEl =
+    document.getElementById('create-lines');
+
 
   if (backLink && songId) {
-    backLink.href = '/sing/#' + encodeURIComponent(songId);
+    backLink.href =
+      '/sing/#' + encodeURIComponent(songId);
   }
 
+
   if (!songId) {
-    songIdEl.textContent = 'No song selected';
+    songIdEl.textContent =
+      'No song selected';
+
     return;
   }
+
 
   const work = CREATE_WORKS.find(function(w) {
     return w['!!!id'] === songId;
   });
 
+
   if (!work) {
     songIdEl.textContent = songId;
     titleEl.textContent = 'Song not found';
+
     return;
   }
+
 
   songIdEl.textContent = songId;
 
-  const originalTitle = work['!!!OTL@@FR'] || 'Untitled';
 
-  titleEl.textContent = originalTitle;
-  composerEl.textContent = work['!!!COM'] || '';
+  const originalTitle =
+    work['!!!OTL@@FR'] || 'Untitled';
 
-  const originalTitleEl = document.getElementById('create-original-title');
+
+  titleEl.textContent =
+    originalTitle;
+
+  composerEl.textContent =
+    work['!!!COM'] || '';
+
+
+  const originalTitleEl =
+    document.getElementById(
+      'create-original-title'
+    );
+
 
   if (originalTitleEl) {
-    originalTitleEl.textContent = originalTitle;
+    originalTitleEl.textContent =
+      originalTitle;
   }
 
-  const filename = work['!!!file-name'] || '';
-  const prefix = songId.substring(0, 2).toUpperCase();
-  const dir = prefix === 'BC' ? 'bc' : 'eg';
+
+  const filename =
+    work['!!!file-name'] || '';
+
+  const prefix =
+    songId.substring(0, 2).toUpperCase();
+
+  const dir =
+    prefix === 'BC' ? 'bc' : 'eg';
+
 
   if (!filename) {
-    linesEl.textContent = 'Lyrics unavailable.';
+    linesEl.textContent =
+      'Lyrics unavailable.';
+
     return;
   }
 
+
   const baseUrl =
-  'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/';
-
-const kernUrl =
-  baseUrl +
-  dir +
-  '/kern/' +
-  filename;
-
-fetch(kernUrl)
-  .then(function(response) {
-    if (!response.ok) {
-      throw new Error('KERN HTTP ' + response.status);
-    }
-
-    return response.text();
-  })
-  .then(function(kern) {
-
-    const phraseSegments = extractKernSegments(kern);
-
-const hasPhraseMarkers = phraseSegments.length > 0;
-
-const segments = hasPhraseMarkers
-  ? phraseSegments
-  : [kern];
-
-const headerLines = hasPhraseMarkers
-  ? extractKernHeader(kern)
-  : [];
-
-console.log(
-  hasPhraseMarkers
-    ? 'Using Humdrum phrase markers.'
-    : 'No phrase markers found; using complete KERN file.'
-);
-
-console.log('SEGMENTS:', segments);
-console.log('SEGMENT COUNT:', segments.length);
-
-    console.log('SEGMENTS:', segments);
-    console.log('SEGMENT COUNT:', segments.length);
-
-// Clear "Loading song..."
-linesEl.innerHTML = '';
+    'https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/';
 
 
-// Create one editor block for every musical phrase.
-segments.forEach(function(segment, index) {
-
-  const lineBlock = document.createElement('div');
-  lineBlock.className = 'create-line-block';
-
-
-  // Phrase heading
-  const header = document.createElement('div');
-  header.className = 'create-line-header';
-  header.textContent = 'Phrase ' + (index + 1);
+  const kernUrl =
+    baseUrl +
+    dir +
+    '/kern/' +
+    filename;
 
 
-  // Music area
-  const music = document.createElement('div');
-  music.className = 'create-line-music';
-  music.dataset.line = index;
+  fetch(kernUrl)
 
+    .then(function(response) {
 
-  // User version
-  const inputWrap = document.createElement('div');
-  inputWrap.className = 'create-input-line';
-
-  const input = document.createElement('input');
-
-  input.type = 'text';
-  input.className = 'create-line-input';
-  input.placeholder = 'Write your own lyric for this phrase...';
-  input.dataset.line = index;
-
-  inputWrap.appendChild(input);
-
-
-  lineBlock.appendChild(header);
-  lineBlock.appendChild(music);
-  lineBlock.appendChild(inputWrap);
-
-  linesEl.appendChild(lineBlock);
-});
-
-
-    // Render corresponding score segment for every line.
-    segments.forEach(function(segment, index) {
-
-      const musicBox = document.querySelector(
-        '.create-line-music[data-line="' + index + '"]'
-      );
-
-      if (!musicBox) {
-        console.warn(
-          'No lyric line exists for music segment ' + index
+      if (!response.ok) {
+        throw new Error(
+          'KERN HTTP ' + response.status
         );
-
-        return;
       }
 
-      const miniKern = hasPhraseMarkers
-  ? buildMiniKern(headerLines, segment)
-  : segment;
+      return response.text();
+    })
+
+
+    .then(function(kern) {
+
+      const phraseSegments =
+        extractKernSegments(kern);
+
+
+      const hasPhraseMarkers =
+        phraseSegments.length > 0;
+
+
+      const segments =
+        hasPhraseMarkers
+          ? phraseSegments
+          : [kern];
+
+
+      const phraseKerns = [];
+
+
+      const headerLines =
+        hasPhraseMarkers
+          ? extractKernHeader(kern)
+          : [];
+
 
       console.log(
-        'SCORE FOR LINE ' + (index + 1) + ':'
+        hasPhraseMarkers
+          ? 'Using Humdrum phrase markers.'
+          : 'No phrase markers found; using complete KERN file.'
       );
 
-      console.log(miniKern);
+
+      console.log(
+        'SEGMENTS:',
+        segments
+      );
+
+      console.log(
+        'SEGMENT COUNT:',
+        segments.length
+      );
 
 
-      const scoreSource =
-        document.createElement('script');
-
-      scoreSource.type = 'text/x-humdrum';
-
-      scoreSource.id =
-        'create-score-' + index;
-
-      scoreSource.textContent = miniKern;
+      // Clear "Loading song..."
+      linesEl.innerHTML = '';
 
 
-      musicBox.innerHTML = '';
+      // ---------------------------------------
+      // Create one editor block for each phrase
+      // ---------------------------------------
 
-      musicBox.appendChild(scoreSource);
+      segments.forEach(function(
+        segment,
+        index
+      ) {
+
+        const lineBlock =
+          document.createElement('div');
+
+        lineBlock.className =
+          'create-line-block';
 
 
-      if (typeof displayHumdrum === 'function') {
+        // Phrase heading
+        const header =
+          document.createElement('div');
 
-        displayHumdrum({
-          source: scoreSource.id
-        });
+        header.className =
+          'create-line-header';
 
-      } else {
 
-        console.error(
-          'displayHumdrum is not available.'
+        const headingText =
+          document.createElement('span');
+
+        headingText.textContent =
+          'Phrase ' + (index + 1);
+
+
+        // Play button
+        const playButton =
+          document.createElement('button');
+
+        playButton.type =
+          'button';
+
+        playButton.className =
+          'create-phrase-play';
+
+        playButton.innerHTML =
+          '▶ Play';
+
+        playButton.dataset.line =
+          index;
+
+
+        header.appendChild(
+          headingText
         );
 
-      }
+        header.appendChild(
+          playButton
+        );
+
+
+        // Music area
+        const music =
+          document.createElement('div');
+
+        music.className =
+          'create-line-music';
+
+        music.dataset.line =
+          index;
+
+
+        // User lyric area
+        const inputWrap =
+          document.createElement('div');
+
+        inputWrap.className =
+          'create-input-line';
+
+
+        const input =
+          document.createElement('input');
+
+        input.type =
+          'text';
+
+        input.className =
+          'create-line-input';
+
+        input.placeholder =
+          'Write your own lyric for this phrase...';
+
+        input.dataset.line =
+          index;
+
+
+        inputWrap.appendChild(
+          input
+        );
+
+
+        lineBlock.appendChild(
+          header
+        );
+
+        lineBlock.appendChild(
+          music
+        );
+
+        lineBlock.appendChild(
+          inputWrap
+        );
+
+
+        linesEl.appendChild(
+          lineBlock
+        );
+
+      });
+
+
+      // ---------------------------------------
+      // Build and render score for each phrase
+      // ---------------------------------------
+
+      segments.forEach(function(
+        segment,
+        index
+      ) {
+
+        const musicBox =
+          document.querySelector(
+            '.create-line-music[data-line="' +
+            index +
+            '"]'
+          );
+
+
+        if (!musicBox) {
+
+          console.warn(
+            'No lyric line exists for music segment ' +
+            index
+          );
+
+          return;
+        }
+
+
+        const miniKern =
+          hasPhraseMarkers
+            ? buildMiniKern(
+                headerLines,
+                segment
+              )
+            : segment;
+
+
+        // Save phrase KERN for playback
+        phraseKerns[index] =
+          miniKern;
+
+
+        console.log(
+          'SCORE FOR LINE ' +
+          (index + 1) +
+          ':'
+        );
+
+        console.log(
+          miniKern
+        );
+
+
+        const scoreSource =
+          document.createElement(
+            'script'
+          );
+
+
+        scoreSource.type =
+          'text/x-humdrum';
+
+
+        scoreSource.id =
+          'create-score-' + index;
+
+
+        scoreSource.textContent =
+          miniKern;
+
+
+        musicBox.innerHTML =
+          '';
+
+
+        musicBox.appendChild(
+          scoreSource
+        );
+
+
+        if (
+          typeof displayHumdrum ===
+          'function'
+        ) {
+
+          displayHumdrum({
+            source:
+              scoreSource.id
+          });
+
+        } else {
+
+          console.error(
+            'displayHumdrum is not available.'
+          );
+
+        }
+
+      });
+
+
+      // ---------------------------------------
+      // Add Play button listeners
+      // ---------------------------------------
+
+      document
+        .querySelectorAll(
+          '.create-phrase-play'
+        )
+        .forEach(function(button) {
+
+          button.addEventListener(
+            'click',
+            function() {
+
+              const index =
+                Number(
+                  button.dataset.line
+                );
+
+
+              console.log(
+                'PLAY PHRASE ' +
+                (index + 1)
+              );
+
+
+              console.log(
+                phraseKerns[index]
+              );
+
+
+              playCreatePhrase(
+                phraseKerns[index],
+                button
+              );
+
+            }
+          );
+
+        });
+
+    })
+
+
+    .catch(function(error) {
+
+      console.error(
+        'Could not load song:',
+        error
+      );
+
+
+      linesEl.textContent =
+        'Song data unavailable.';
+
     });
-
-
-  })
-  .catch(function(error) {
-
-    console.error(
-      'Could not load song:',
-      error
-    );
-
-    linesEl.textContent =
-      'Song data unavailable.';
-
-  });
 
 });
 
