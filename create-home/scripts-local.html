@@ -1,0 +1,58 @@
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  const grid =
+    document.getElementById('create-home-grid');
+
+  if (!grid) return;
+
+  CREATE_HOME_WORKS.forEach(function(work) {
+
+    const id =
+      work['!!!id'] || '';
+
+    const title =
+      work['!!!OTL@@FR'] || 'Untitled';
+
+    const composer =
+      work['!!!COM'] || '';
+
+    const card =
+      document.createElement('a');
+
+    card.className =
+      'create-home-card';
+
+    card.href =
+      '/create/?song=' + encodeURIComponent(id);
+
+    card.innerHTML = `
+      <div class="create-home-card-id">
+        ${id}
+      </div>
+
+      <div class="create-home-card-icon">
+        ✨
+      </div>
+
+      <div class="create-home-card-title">
+        ${title}
+      </div>
+
+      <div class="create-home-card-composer">
+        ${composer}
+      </div>
+
+      <div class="create-home-card-action">
+        Create →
+      </div>
+    `;
+
+    grid.appendChild(card);
+
+  });
+
+});
+
+</script>
