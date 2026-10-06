@@ -170,8 +170,11 @@ if (tempoInput) {
   const params = new URLSearchParams(window.location.search);
   const songId = params.get('song');
 
-  const backLink =
-    document.getElementById('create-back-link');
+  const singLink =
+  document.getElementById('create-sing-link');
+
+  const chansonLink =
+  document.getElementById('create-chanson-link');
 
   const songIdEl =
     document.getElementById('create-song-id');
@@ -186,9 +189,14 @@ if (tempoInput) {
     document.getElementById('create-lines');
 
 
-  if (backLink && songId) {
-    backLink.href =
-      '/sing/#' + encodeURIComponent(songId);
+  if (singLink && songId) {
+  singLink.href =
+    '/sing/#' + encodeURIComponent(songId);
+  }
+
+  if (chansonLink && songId) {
+  chansonLink.href =
+    '/work/?id=' + encodeURIComponent(songId);
   }
 
 

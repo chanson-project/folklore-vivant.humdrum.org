@@ -9,8 +9,12 @@ nav_exclude: true
 <div id="create-score-test-output"></div>
 
 <div class="create-back-wrap">
-  <a id="create-back-link" class="create-back-btn" href="/sing/">
-    ← Back to song
+  <a id="create-sing-link" class="create-back-btn" href="/sing/">
+    🎤 Sing Along
+  </a>
+
+  <a id="create-chanson-link" class="create-back-btn" href="/work/">
+    🎼 Chansons
   </a>
 </div>
 
