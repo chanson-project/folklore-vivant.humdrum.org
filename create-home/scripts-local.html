@@ -5,53 +5,115 @@ document.addEventListener('DOMContentLoaded', function() {
   const grid =
     document.getElementById('create-home-grid');
 
+  const search =
+    document.getElementById('create-home-search');
+
+  const count =
+    document.getElementById('create-home-count');
+
   if (!grid) return;
 
-  CREATE_HOME_WORKS.forEach(function(work) {
 
-    const id =
-      work['!!!id'] || '';
+  function renderCreateSongs(works) {
 
-    const title =
-      work['!!!OTL@@FR'] || 'Untitled';
+    grid.innerHTML = '';
 
-    const composer =
-      work['!!!COM'] || '';
+    if (count) {
+      count.textContent =
+        works.length + ' songs';
+    }
 
-    const card =
-      document.createElement('a');
 
-    card.className =
-      'create-home-card';
+    works.forEach(function(work) {
 
-    card.href =
-      '/create/?song=' + encodeURIComponent(id);
+      const id =
+        work['!!!id'] || '';
 
-    card.innerHTML = `
-      <div class="create-home-card-id">
-        ${id}
-      </div>
+      const title =
+        work['!!!OTL@@FR'] || 'Untitled';
 
-      <div class="create-home-card-icon">
-        ✨
-      </div>
+      const composer =
+        work['!!!COM'] || '';
 
-      <div class="create-home-card-title">
-        ${title}
-      </div>
+      const card =
+        document.createElement('a');
 
-      <div class="create-home-card-composer">
-        ${composer}
-      </div>
+      card.className =
+        'create-home-card';
 
-      <div class="create-home-card-action">
-        Create →
-      </div>
-    `;
+      card.href =
+        '/create/?song=' +
+        encodeURIComponent(id);
 
-    grid.appendChild(card);
+      card.innerHTML = `
+        <div class="create-home-card-id">
+          ${id}
+        </div>
 
-  });
+        <div class="create-home-card-icon">
+          ✨
+        </div>
+
+        <div class="create-home-card-title">
+          ${title}
+        </div>
+
+        <div class="create-home-card-composer">
+          ${composer}
+        </div>
+
+        <div class="create-home-card-action">
+          Create →
+        </div>
+      `;
+
+      grid.appendChild(card);
+
+    });
+
+  }
+
+
+  renderCreateSongs(CREATE_HOME_WORKS);
+
+
+  if (search) {
+
+    search.addEventListener('input', function() {
+
+      const query =
+        this.value
+          .trim()
+          .toLowerCase();
+
+      const filtered =
+        CREATE_HOME_WORKS.filter(function(work) {
+
+          const id =
+            (work['!!!id'] || '')
+              .toLowerCase();
+
+          const title =
+            (work['!!!OTL@@FR'] || '')
+              .toLowerCase();
+
+          const composer =
+            (work['!!!COM'] || '')
+              .toLowerCase();
+
+          return (
+            id.includes(query) ||
+            title.includes(query) ||
+            composer.includes(query)
+          );
+
+        });
+
+      renderCreateSongs(filtered);
+
+    });
+
+  }
 
 });
 

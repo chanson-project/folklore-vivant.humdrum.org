@@ -14,6 +14,21 @@ nav_exclude: true
     Choose a song to create your own version.
   </p>
 
+<div class="create-home-search-wrap">
+  <input
+    id="create-home-search"
+    class="create-home-search"
+    type="search"
+    placeholder="Search / Rechercher..."
+    aria-label="Search songs"
+  >
+</div>
+
+<div
+  id="create-home-count"
+  class="create-home-count">
+</div>
+
   <div id="create-home-grid"></div>
 
 </div>
