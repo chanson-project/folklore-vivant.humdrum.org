@@ -10,8 +10,8 @@ nav_exclude: true
 
 <div class="create-back-wrap">
   <a id="create-sing-link" class="create-back-btn" href="/sing/">
-    🎤 Sing Along
-  </a>
+  🎤 <span data-i18n="nav.sing_along">Sing Along!</span>
+</a>
 
   <a id="create-chanson-link" class="create-back-btn" href="/work/">
     🎼 Chansons
