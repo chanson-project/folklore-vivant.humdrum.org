@@ -8,13 +8,17 @@ main.page-content {
   background: #f8f2e3;
 }
 
+main.page-content .wrapper {
+  max-width: 1600px;
+}
+
 .post-title,
 .page-title {
   display: none;
 }
 
 .create-home-page {
-  max-width: 1500px;
+  max-width: 1560px;
   margin: 0 auto;
   padding: 48px 24px 80px;
   text-align: center;
@@ -26,28 +30,64 @@ main.page-content {
 }
 
 .create-home-subtitle {
-  margin: 0 0 36px;
+  margin: 0 0 28px;
   font-size: 1.2rem;
   opacity: 0.7;
+}
+
+.create-home-search-wrap {
+  max-width: 1000px;
+  margin: 28px auto 10px;
+}
+
+.create-home-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 24px;
+  border: 2px solid #d9d3c5;
+  border-radius: 999px;
+  background: #f8f7fb;
+  color: #5a5147;
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.create-home-search::placeholder {
+  color: #8a8379;
+  opacity: 1;
+}
+
+.create-home-search:focus {
+  outline: none;
+  border-color: #efb35f;
+  box-shadow: 0 0 0 3px rgba(239, 179, 95, 0.15);
+}
+
+.create-home-count {
+  max-width: 1000px;
+  margin: 0 auto 18px;
+  text-align: left;
+  opacity: 0.6;
+  font-size: 0.95rem;
 }
 
 #create-home-grid {
   display: grid;
   grid-template-columns:
-    repeat(auto-fill, minmax(190px, 1fr));
+    repeat(auto-fill, minmax(150px, 1fr));
   gap: 16px;
   text-align: left;
 }
 
 .create-home-card {
   display: block;
-  padding: 22px;
+  padding: 20px;
   border: 2px solid #e1cfaa;
   border-radius: 22px;
   background: #f6efe1;
   color: #2a2320;
   text-decoration: none;
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -62,31 +102,32 @@ main.page-content {
 }
 
 .create-home-card-id {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   opacity: 0.55;
   text-transform: uppercase;
 }
 
 .create-home-card-icon {
-  margin: 16px 0 10px;
-  font-size: 2rem;
+  margin: 12px 0 8px;
+  font-size: 1.8rem;
 }
 
 .create-home-card-title {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.25;
 }
 
 .create-home-card-composer {
   margin-top: 8px;
-  min-height: 24px;
+  min-height: 22px;
   opacity: 0.65;
+  font-size: 0.95rem;
 }
 
 .create-home-card-action {
-  margin-top: 18px;
+  margin-top: 16px;
   font-weight: 700;
   color: #db8a45;
 }
