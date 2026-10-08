@@ -882,14 +882,15 @@ function replacePhraseLyrics(originalKern, newLyrics) {
       }
 
       function checkScore() {
-        const svg = [...container.querySelectorAll('svg')]
-          .find(el =>
-            el.hasAttribute('viewBox') &&
-            el.querySelector('.note')
-          );
+    const svg = [...container.querySelectorAll('svg')]
+    .find(el =>
+      el.querySelector('defs') &&
+      el.querySelector('style') &&
+      el.querySelector('.note')
+    );
 
-        if (svg) finish(null, svg);
-      }
+    if (svg) finish(null, svg);
+}
 
       observer = new MutationObserver(checkScore);
 
@@ -1008,10 +1009,11 @@ function replacePhraseLyrics(originalKern, newLyrics) {
 
         } else {
           const originalSvg = [
-            ...block.querySelectorAll('.create-line-music svg')
+    ...block.querySelectorAll('.create-line-music svg')
           ].find(svg =>
-            svg.hasAttribute('viewBox') &&
-            svg.querySelector('.note')
+    svg.querySelector('defs') &&
+    svg.querySelector('style') &&
+    svg.querySelector('.note')
           );
 
           if (!originalSvg) {
