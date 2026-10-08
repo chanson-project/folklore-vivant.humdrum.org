@@ -63,16 +63,30 @@ function extractKernHeader(kern) {
   return header;
 }
 
-
 function buildMiniKern(headerLines, segmentText) {
   const segmentRows = segmentText.split(/\r?\n/);
 
+  // Determine the number of active spines
+  // at the end of this phrase.
+  const lastSpineRow = [...segmentRows]
+    .reverse()
+    .find(function(row) {
+      return row.trim() &&
+        !row.startsWith('!!') &&
+        !row.startsWith('!');
+    });
+
   let spineCount = 1;
 
-  for (const row of headerLines) {
-    if (row.startsWith('**')) {
-      spineCount = row.split('\t').length;
-      break;
+  if (lastSpineRow) {
+    spineCount = lastSpineRow.split('\t').length;
+  } else {
+    const header = headerLines.find(function(row) {
+      return row.startsWith('**');
+    });
+
+    if (header) {
+      spineCount = header.split('\t').length;
     }
   }
 
@@ -482,13 +496,52 @@ if (tempoInput) {
         }
 
 
-        const miniKern =
-          hasPhraseMarkers
-            ? buildMiniKern(
-                headerLines,
-                segment
-              )
-            : segment;
+        const firstDataRow = segment
+  .split(/\r?\n/)
+  .find(row =>
+    row.trim() &&
+    !row.startsWith('!')
+  );
+
+const initialHeader = headerLines.find(
+  row => row.startsWith('**')
+);
+
+const initialSpines = initialHeader
+  ? initialHeader.split('\t').length
+  : 0;
+
+const phraseSpines = firstDataRow
+  ? firstDataRow.split('\t').length
+  : 0;
+
+let miniKern = hasPhraseMarkers
+  ? buildMiniKern(headerLines, segment)
+  : segment;
+
+// Restore the missing split for phrases that
+// begin with six spines after a five-spine header.
+if (
+  hasPhraseMarkers &&
+  initialSpines === 5 &&
+  phraseSpines === 6
+) {
+  const rows = miniKern.split(/\r?\n/);
+
+  const insertionPoint = rows.findIndex(row =>
+    row === firstDataRow
+  );
+
+  if (insertionPoint !== -1) {
+    rows.splice(
+      insertionPoint,
+      0,
+      '*^\t*\t*\t*\t*'
+    );
+
+    miniKern = rows.join('\n');
+  }
+}
 
 
         // Save phrase KERN for playback
