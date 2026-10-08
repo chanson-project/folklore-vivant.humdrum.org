@@ -365,7 +365,7 @@ if (tempoInput) {
 
         lineBlock.className =
           'create-line-block';
-
+lineBlock.dataset.line = index;
 
         // Phrase heading
         const header =
@@ -545,8 +545,17 @@ if (
 
 
         // Save phrase KERN for playback
-        phraseKerns[index] =
-          miniKern;
+phraseKerns[index] = miniKern;
+
+// Also expose the original Humdrum data
+// for lyric editing and PDF export.
+const phraseBlock = document.querySelector(
+  '.create-line-block[data-line="' + index + '"]'
+);
+
+if (phraseBlock) {
+  phraseBlock.dataset.originalKern = miniKern;
+}
 
 
         console.log(
@@ -666,6 +675,164 @@ if (
     });
 
 });
+
+// Replace the original lyric tokens while preserving
+// the musical data and Humdrum spine structure.
+// Replace lyrics in a Humdrum phrase without changing notes.
+function replacePhraseLyrics(originalKern, newLyrics) {
+  const rows = originalKern.split(/\r?\n/);
+
+  const headerIndex = rows.findIndex(row =>
+    row.startsWith('**')
+  );
+
+  if (headerIndex === -1) {
+    throw new Error('Humdrum header not found.');
+  }
+
+  const headerCols = rows[headerIndex].split('\t');
+
+  if (!headerCols.includes('**text')) {
+    throw new Error('No **text lyric spine found.');
+  }
+
+  // Track active spine types.
+  let spines = headerCols.slice();
+
+  const lyricPositions = [];
+  const lyricCells = [];
+
+  function isDataRow(cols) {
+    return cols.length > 0 &&
+      !cols[0].startsWith('*') &&
+      !cols[0].startsWith('=');
+  }
+
+  // Scan lyric tracks and preserve spine structure.
+  for (let i = headerIndex + 1; i < rows.length; i++) {
+    const row = rows[i];
+
+    if (!row || row.startsWith('!')) {
+      continue;
+    }
+
+    const cols = row.split('\t');
+
+    if (cols.length !== spines.length) {
+      throw new Error(
+        'Spine count mismatch at line ' + (i + 1)
+      );
+    }
+
+    if (cols.every(token => token.startsWith('*'))) {
+      if (cols.some(token =>
+        token === '*v' ||
+        token === '*x' ||
+        token === '*+'
+      )) {
+        throw new Error(
+          'Unsupported spine operation at line ' + (i + 1)
+        );
+      }
+
+      const nextSpines = [];
+
+      cols.forEach((token, index) => {
+        if (token === '*^') {
+          nextSpines.push(
+            spines[index],
+            spines[index]
+          );
+        } else if (token !== '*-') {
+          nextSpines.push(spines[index]);
+        }
+      });
+
+      spines = nextSpines;
+      continue;
+    }
+
+    if (!isDataRow(cols)) {
+      continue;
+    }
+
+    const firstTextIndex = spines.indexOf('**text');
+
+    if (firstTextIndex === -1) {
+      continue;
+    }
+
+    // Store every non-null lyric location so that
+    // original lyrics from all verses can be cleared.
+    cols.forEach((token, column) => {
+      if (
+        spines[column] === '**text' &&
+        token !== '.'
+      ) {
+        lyricCells.push({
+          rowIndex: i,
+          colIndex: column
+        });
+      }
+    });
+
+    // Use the first lyric spine for the new lyrics.
+    // Existing non-null tokens define available slots.
+    if (cols[firstTextIndex] !== '.') {
+      lyricPositions.push({
+        rowIndex: i,
+        colIndex: firstTextIndex
+      });
+    }
+  }
+
+  const newTokens = newLyrics
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (
+    newTokens.length > 0 &&
+    lyricPositions.length === 0
+  ) {
+    throw new Error(
+      'No lyric positions available in this phrase.'
+    );
+  }
+
+  if (newTokens.length > lyricPositions.length) {
+    throw new Error(
+      'You entered ' + newTokens.length +
+      ' lyric units, but this phrase has only ' +
+      lyricPositions.length +
+      ' positions. Please adjust the lyrics.'
+    );
+  }
+
+  // Clear all original lyric tokens.
+  lyricCells.forEach(position => {
+    const cols = rows[position.rowIndex].split('\t');
+
+    cols[position.colIndex] = '.';
+
+    rows[position.rowIndex] = cols.join('\t');
+  });
+
+  // Insert the user's new lyrics.
+  lyricPositions.forEach((position, index) => {
+    if (index >= newTokens.length) {
+      return;
+    }
+
+    const cols = rows[position.rowIndex].split('\t');
+
+    cols[position.colIndex] = newTokens[index];
+
+    rows[position.rowIndex] = cols.join('\t');
+  });
+
+  return rows.join('\n');
+}
 
 // Export the complete Create composition through
 // the browser's native Save as PDF dialog.
