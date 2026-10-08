@@ -85,6 +85,15 @@ nav_exclude: true
 
   </div>
 
+  <div class="create-export-actions">
+    <button
+      id="create-save-pdf"
+      class="create-save-pdf-btn"
+      type="button">
+      📄 Save as PDF
+    </button>
+  </div>
+
 </div>
 
 
