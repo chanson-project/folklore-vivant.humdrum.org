@@ -28,6 +28,15 @@ nav_exclude: true
   <p id="create-composer" class="create-composer"></p>
   <p id="create-song-id" class="create-song-id"></p>
 
+<div class="create-export-actions">
+  <button
+    id="create-save-pdf"
+    class="create-save-pdf-btn"
+    type="button">
+    📄 Save as PDF
+  </button>
+</div>
+
   <div class="create-tempo-control">
   <label for="create-tempo-input">Tempo</label>
 
@@ -83,15 +92,6 @@ nav_exclude: true
       Loading song...
     </div>
 
-  </div>
-
-  <div class="create-export-actions">
-    <button
-      id="create-save-pdf"
-      class="create-save-pdf-btn"
-      type="button">
-      📄 Save as PDF
-    </button>
   </div>
 
 </div>
