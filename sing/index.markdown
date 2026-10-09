@@ -90,6 +90,12 @@ nav_exclude: true
 </div>
 
 <div class="stage-create-wrap">
+  <a id="stage-chansons-link"
+     class="sing-btn create-btn"
+     href="#">
+    ← Chansons
+  </a>
+
   <a id="stage-create-link"
      class="sing-btn create-btn"
      href="#"
