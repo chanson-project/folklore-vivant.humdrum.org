@@ -37,19 +37,46 @@ nav_exclude: true
   </button>
 </div>
 
-  <div class="create-tempo-control">
-  <label for="create-tempo-input">Tempo</label>
+<div class="create-tempo-control">
+
+  <button
+    type="button"
+    class="create-tempo-btn"
+    data-scale="0.5"
+    title="Slow"
+    aria-label="Slow">
+    🐢
+  </button>
 
   <input
-    type="number"
-    id="create-tempo-input"
-    min="40"
+    id="create-tempo-slider"
+    class="create-tempo-slider"
+    type="range"
+    min="20"
     max="240"
-    step="1"
     value="120"
-  >
+    aria-label="Tempo">
 
-  <span>BPM</span>
+  <button
+    type="button"
+    class="create-tempo-btn"
+    data-scale="1.5"
+    title="Fast"
+    aria-label="Fast">
+    🐇
+  </button>
+
+  <label class="create-tempo-input-wrap">
+    <span>♩</span>
+    <input
+      id="create-tempo-input"
+      type="number"
+      min="20"
+      max="240"
+      value="120">
+    <span>bpm</span>
+  </label>
+
 </div>
 
   <div class="create-title-editor">

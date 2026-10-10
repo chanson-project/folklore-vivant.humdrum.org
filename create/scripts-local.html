@@ -103,20 +103,42 @@ function buildMiniKern(headerLines, segmentText) {
 
 let CREATE_TEMPO = 120;
 
-function setCreateTempo(value) {
-  const tempo = Math.max(40, Math.min(240, Number(value) || 120));
+function setCreateTempo(value, activeScale = null) {
+  const parsed = Number(value);
+
+  const tempo = Math.max(
+    20,
+    Math.min(240, Number.isFinite(parsed) && parsed > 0
+      ? Math.round(parsed)
+      : 120)
+  );
 
   CREATE_TEMPO = tempo;
 
   const input = document.getElementById('create-tempo-input');
+  const slider = document.getElementById('create-tempo-slider');
 
-  if (input) {
-    input.value = tempo;
-  }
+  if (input) input.value = tempo;
+  if (slider) slider.value = tempo;
+
+  document.querySelectorAll('.create-tempo-btn').forEach(function(btn) {
+    btn.classList.toggle(
+      'active',
+      activeScale !== null &&
+      Number(btn.dataset.scale) === activeScale
+    );
+  });
 
   if (typeof KernPlayer !== 'undefined') {
     KernPlayer.setTempo(tempo);
   }
+}
+
+function setCreateTempoScale(scale) {
+  const baseTempo = 120;
+  const tempo = Math.round(baseTempo * scale);
+
+  setCreateTempo(tempo, scale);
 }
 
 // Temporary playback function.
@@ -170,16 +192,28 @@ function playCreatePhrase(kern, button) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-  const tempoInput =
-  document.getElementById('create-tempo-input');
+  const tempoInput = document.getElementById('create-tempo-input');
+const tempoSlider = document.getElementById('create-tempo-slider');
 
 if (tempoInput) {
-  tempoInput.addEventListener('input', function() {
+  tempoInput.addEventListener('change', function() {
     setCreateTempo(this.value);
   });
-
-  setCreateTempo(tempoInput.value);
 }
+
+if (tempoSlider) {
+  tempoSlider.addEventListener('input', function() {
+    setCreateTempo(this.value);
+  });
+}
+
+document.querySelectorAll('.create-tempo-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    setCreateTempoScale(Number(this.dataset.scale));
+  });
+});
+
+setCreateTempo(tempoInput ? tempoInput.value : 120);
 
   const params = new URLSearchParams(window.location.search);
   const songId = params.get('song');
