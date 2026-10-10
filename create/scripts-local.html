@@ -703,19 +703,17 @@ scoreVersions.forEach(function(version) {
   wrapper.appendChild(scoreSource);
   musicBox.appendChild(wrapper);
 
-  if (typeof displayHumdrum === 'function') {
-    displayHumdrum({
-      source: scoreSource.id
-    });
-  } else {
-    console.error('displayHumdrum is not available.');
-  }
-});
-
+          if (typeof displayHumdrum === 'function') {
+          displayHumdrum({
+            source: scoreSource.id
+          });
+        } else {
+          console.error('displayHumdrum is not available.');
         }
 
-      });
+      }); // End scoreVersions.forEach
 
+      }); // End segments.forEach
 
       // ---------------------------------------
       // Add Play button listeners
