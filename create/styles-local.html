@@ -331,4 +331,41 @@ main.page-content {
   }
 }
 
+/* Composez display mode controls */
+
+.create-view-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 26px auto;
+}
+
+.create-view-btn {
+  padding: 10px 18px;
+  border: 2px solid #dfcfb0;
+  border-radius: 24px;
+  background: #fffdf8;
+  color: #333;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.create-view-btn:hover {
+  background: #fff1d6;
+}
+
+.create-view-btn.active {
+  background: #f5a65b;
+  border-color: #df913c;
+}
+
+.create-editor[data-view="music"] .create-input-line {
+  display: none;
+}
+
+.create-editor[data-view="text"] .create-line-music {
+  display: none;
+}
+
 </style>

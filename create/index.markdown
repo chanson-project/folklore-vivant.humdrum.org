@@ -112,8 +112,28 @@ nav_exclude: true
 
   </div>
 
+<div class="create-view-controls" role="group" aria-label="Display mode">
+  <button type="button"
+          class="create-view-btn"
+          data-view="music">
+    🎼 Music only
+  </button>
 
-  <div class="create-editor">
+  <button type="button"
+          class="create-view-btn"
+          data-view="text">
+    📝 Text only
+  </button>
+
+  <button type="button"
+          class="create-view-btn active"
+          data-view="both"
+          aria-pressed="true">
+    🎵 Both
+  </button>
+</div>
+
+  <div class="create-editor" data-view="both">
 
     <div id="create-lines">
       Loading song...

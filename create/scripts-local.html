@@ -141,6 +141,23 @@ function setCreateTempoScale(scale) {
   setCreateTempo(tempo, scale);
 }
 
+function setCreateView(mode) {
+  if (!['music', 'text', 'both'].includes(mode)) return;
+
+  const editor = document.querySelector('.create-editor');
+
+  if (!editor) return;
+
+  editor.dataset.view = mode;
+
+  document.querySelectorAll('.create-view-btn').forEach(function(btn) {
+    const active = btn.dataset.view === mode;
+
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', String(active));
+  });
+}
+
 // Temporary playback function.
 // For now this only confirms that the correct phrase KERN is selected.
 function playCreatePhrase(kern, button) {
@@ -210,6 +227,13 @@ if (tempoSlider) {
 document.querySelectorAll('.create-tempo-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
     setCreateTempoScale(Number(this.dataset.scale));
+  });
+});
+
+// Display mode controls: Music / Text / Both
+document.querySelectorAll('.create-view-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    setCreateView(this.dataset.view);
   });
 });
 
