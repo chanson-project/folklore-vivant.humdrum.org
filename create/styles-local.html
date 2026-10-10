@@ -382,4 +382,24 @@ main.page-content {
   display: none;
 }
 
+/* Music only: show melody-only score */
+.create-editor[data-view="music"] .create-score-version[data-score="original"] {
+  display: none;
+}
+
+/* Both: show original score with lyrics */
+.create-editor[data-view="both"] .create-score-version[data-score="melody"] {
+  display: none;
+}
+
+/* Both already includes lyrics inside the original score */
+.create-editor[data-view="both"] .create-original-lyrics {
+  display: none;
+}
+
+/* Text only: display original lyrics without scores */
+.create-editor[data-view="text"] .create-score-version {
+  display: none;
+}
+
 </style>

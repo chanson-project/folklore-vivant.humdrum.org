@@ -676,48 +676,41 @@ if (phraseBlock) {
         );
 
 
-        const scoreSource =
-          document.createElement(
-            'script'
-          );
+        // Render both melody-only and original scores.
+const scoreVersions = [
+  {
+    name: 'melody',
+    kern: '!!!filter: extract -s 1\n' + miniKern
+  },
+  {
+    name: 'original',
+    kern: miniKern
+  }
+];
 
+musicBox.innerHTML = '';
 
-        scoreSource.type =
-          'text/x-humdrum';
+scoreVersions.forEach(function(version) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'create-score-version';
+  wrapper.dataset.score = version.name;
 
+  const scoreSource = document.createElement('script');
+  scoreSource.type = 'text/x-humdrum';
+  scoreSource.id = 'create-score-' + version.name + '-' + index;
+  scoreSource.textContent = version.kern;
 
-        scoreSource.id =
-          'create-score-' + index;
+  wrapper.appendChild(scoreSource);
+  musicBox.appendChild(wrapper);
 
-
-        scoreSource.textContent =
-  '!!!filter: extract -s 1\n' + miniKern;
-
-
-        musicBox.innerHTML =
-          '';
-
-
-        musicBox.appendChild(
-          scoreSource
-        );
-
-
-        if (
-          typeof displayHumdrum ===
-          'function'
-        ) {
-
-          displayHumdrum({
-            source:
-              scoreSource.id
-          });
-
-        } else {
-
-          console.error(
-            'displayHumdrum is not available.'
-          );
+  if (typeof displayHumdrum === 'function') {
+    displayHumdrum({
+      source: scoreSource.id
+    });
+  } else {
+    console.error('displayHumdrum is not available.');
+  }
+});
 
         }
 
