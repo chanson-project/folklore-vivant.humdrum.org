@@ -360,10 +360,24 @@ main.page-content {
   border-color: #df913c;
 }
 
-.create-editor[data-view="music"] .create-input-line {
+/* Original lyrics styling */
+
+.create-original-lyrics {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #fffdf8;
+  border: 1px solid #dfcfb0;
+  border-radius: 10px;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* Music only: score and input */
+.create-editor[data-view="music"] .create-original-lyrics {
   display: none;
 }
 
+/* Text only: original lyrics and input */
 .create-editor[data-view="text"] .create-line-music {
   display: none;
 }

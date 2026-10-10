@@ -34,6 +34,43 @@ function extractKernSegments(kern) {
   return segments;
 }
 
+function extractPhraseLyrics(segment, kern) {
+  const header = kern.split(/\r?\n/)
+    .find(row => row.startsWith('**'));
+
+  if (!header) return '';
+
+  const spines = header.split('\t');
+  const textIndex = spines.findIndex(
+    spine => spine === '**text'
+  );
+
+  if (textIndex === -1) return '';
+
+  const syllables = [];
+
+  segment.split(/\r?\n/).forEach(function(row) {
+    if (
+      !row.trim() ||
+      row.startsWith('!') ||
+      row.startsWith('*') ||
+      row.startsWith('=')
+    ) return;
+
+    const cols = row.split('\t');
+    const token = cols[textIndex];
+
+    if (!token || token === '.') return;
+
+    syllables.push(token);
+  });
+
+  return syllables
+    .join(' ')
+    .replace(/-\s+/g, '-')
+    .replace(/\s+([,.;!?])/g, '$1')
+    .trim();
+}
 
 function extractKernHeader(kern) {
   const rows = kern.split(/\r?\n/);
@@ -476,6 +513,14 @@ lineBlock.dataset.line = index;
         music.dataset.line =
           index;
 
+        // Original lyrics for Text and Both modes
+        const originalLyrics =
+        document.createElement('div');
+
+        originalLyrics.className =
+        'create-original-lyrics';
+
+        originalLyrics.dataset.line = index;
 
         // User lyric area
         const inputWrap =
@@ -510,13 +555,9 @@ lineBlock.dataset.line = index;
           header
         );
 
-        lineBlock.appendChild(
-          music
-        );
-
-        lineBlock.appendChild(
-          inputWrap
-        );
+        lineBlock.appendChild(music);
+        lineBlock.appendChild(originalLyrics);
+        lineBlock.appendChild(inputWrap);
 
 
         linesEl.appendChild(
@@ -542,6 +583,14 @@ lineBlock.dataset.line = index;
             '"]'
           );
 
+        const originalLyricsBox = document.querySelector(
+  '.create-original-lyrics[data-line="' + index + '"]'
+);
+
+if (originalLyricsBox) {
+  originalLyricsBox.textContent =
+    extractPhraseLyrics(segment, kern);
+}
 
         if (!musicBox) {
 
