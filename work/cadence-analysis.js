@@ -105,10 +105,13 @@ function parseKernSpines(kernText) {
 
 			const dur = _tokenDuration(token);
 
-			if (token[0] === 'r') {
-				if (dur > 0) qpos[vi] += dur;
-				continue;
-			}
+			if (/^\d+\.*r/.test(token)) {
+			if (token.includes('}') && voices[vi].length > 0) {
+		voices[vi][voices[vi].length - 1].phraseEnd = true;
+	}
+			if (dur > 0) qpos[vi] += dur;
+			continue;
+	}
 			if (token[0] === 'q' || token[0] === 'Q') continue;
 
 			const midi = _tokenToMidi(token);
@@ -117,7 +120,15 @@ function parseKernSpines(kernText) {
 				continue;
 			}
 
-			voices[vi].push({ lineIdx, spineIdx: col, midi, durationQN: dur, qpos: qpos[vi], measure });
+			voices[vi].push({
+		lineIdx,
+		spineIdx: col,
+		midi,
+		durationQN: dur,
+		qpos: qpos[vi],
+		measure,
+		phraseEnd: token.includes('}')
+});
 			if (dur > 0) qpos[vi] += dur;
 		}
 	}
@@ -135,9 +146,13 @@ function detectCadences(voices, key) {
 	if (voices.length === 1) {
 		// ── Monophonic: look for stepwise arrivals on the tonic ────────────
 		const notes = voices[0];
+		const hasPhraseMarkers = notes.some(note => note.phraseEnd);
+
 		for (let i = 1; i < notes.length; i++) {
-			const curr = notes[i];
-			const prev = notes[i - 1];
+		const curr = notes[i];
+		const prev = notes[i - 1];
+
+    if (hasPhraseMarkers && !curr.phraseEnd) continue;
 
 			if (curr.durationQN < 1) continue;  // too short
 
