@@ -442,7 +442,16 @@ function buildCollectionSelect(data) {
 		if (!col) continue;
 		counter[col] = (counter[col] === undefined) ? 1 : counter[col] + 1;
 	}
-	let clist = Object.keys(counter).sort((a, b) => a.localeCompare(b));
+	for (const id of Object.keys(SOURCES_LOOKUP)) {
+    const source = SOURCES_LOOKUP[id];
+    const name = source[SOURCE_FIELD.title] || id;
+
+    if (counter[name] === undefined) {
+        counter[name] = 0;
+    }
+}
+
+let clist = Object.keys(counter).sort((a, b) => a.localeCompare(b));
 	let output = "<select class='collection' onchange='doSearch()'>\n";
 	output += `<option value="">${t('rep.collection_label')} (${clist.length})</option>`;
 	for (let i = 0; i < clist.length; i++) {
