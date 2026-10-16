@@ -1,30 +1,57 @@
 [
 	{
-		"!!!id": "bc100",
+		"!!!id": "bc",
 		"!!!PTL": "Les cent plus belles chansons",
 		"!!!PDT": "1956; 2011",
 		"!!!PPR": "La Bonne Chanson, inc.",
 		"!!!PPP": "Saint-Hyacinthe",
 		"!!!PED": "Gadbois, Charles-Émile",
-		"!!!YEM": "2012 Bibliothèque nationale du Québec; Biblothèque nationale du Canada"
+		"!!!SMA": "2012 Bibliothèque nationale du Québec; Biblothèque nationale du Canada"
 	},
 	{
-		"!!!id": "eg104",
+		"!!!id": "eg",
 		"!!!PTL": "Chansons populaires du Canada",
-		"!!!PTL-sub": "Recueillies et publiées avec annotations, etc | par | Ernest Gagnon",
+		"!!!PTL-sub": "Recueillies et publiées avec annotations, etc. par Ernest Gagnon",
 		"!!!PDT": "1865",
 		"!!!PPR": "G. E. Desbarats, Foyer Canadien",
 		"!!!PPP": "Bureau du \"Foyer Canadien\" | Coin des rues Sainte-Anne et des Jardins, Québec",
 		"!!!PED": "Gagnon,Ernest"
 	},
 	{
-		"!!!id": "mb157",
+		"!!!id": "mb",
 		"!!!PTL": "Le rossignol y chante",
 		"!!!PTL-sub": "Première partie du Répertoire de la chanson folklorique française au Canada, Bulletin no 175, No 52 de la série anthropologique",
 		"!!!PDT": "1962",
 		"!!!PPR": "Ministère du Nord Canadien et des Ressources Nationales",
 		"!!!PPP": "Musée National du Canada",
-		"!!!PED": "Barbeau, Maurice",
+		"!!!PED": "Barbeau, Marius",
 		"Other": "Publié avec l'authorisation de l'honorable Walter Dinsdale, C. P., ministre du Nord canadien et des Ressources nationales; N° de catalogue R93-175; Roger Duhamel, M.S.R.C., Imprimeur de la Reine et Contrôleur de la Papetrie, Ottawa"
+	},
+	{
+		"!!!id": "vq",
+		"!!!PTL": "Chanson populaires du vieux Québec",
+		"!!!PTL-series": "Bulletin 75, Série Anthropologique, No. 16",
+		"!!!PDT": "1930",
+		"!!!PPR": "Ministère des Mines",
+		"!!!PPP": "Musée National du Canada",
+		"!!!PED": "Barbeau, Marius",
+		"Other": "Ministère des Mines: Hon. T.-A. Crerar, Ministre; Charles Camsell, Sous-ministre; Musée National du Canada: W.-H. Collins, Directeur Intérimaire"
+	},
+	{
+		"!!!id": "erc",
+		"!!!PTL": "The Ermatinger Collection of Voyageur Songs (ca. 1830)",
+		"!!!PTL-series": "Journal of American Folklore",
+		"!!!PED": "Barbeau, Marius"
+	},
+	{
+		"!!!id": "pei",
+		"!!!PTL": "Complaintes acadiennes de l'Île-du-Prince-Edouard",
+		"!!!PTL-series": "Collection Connaissance",
+		"!!!PDT": "1980",
+		"!!!PPR": "Les Éditions Leméac Inc.",
+		"!!!PPP": "Ottawa",
+		"!!!PED": "Arsenault",
+		"!!!YEM": "Tous droits de traduction et d'adaptation, en totalité ou en partie, réservés pour tous les pays. La reproduction d'un extrait Quelconque de ce livre, par quelque procédé que ce soit, tant électronique que mécanique, en particulier par photocopie et par microfilm, est interdite sans l'autorisation écrite de l'auteur et de l'éditeur.",
+		"!!!SMA": "Bibliothèque nationale du Québec, 3e trimestre 1980"
 	}
 ]
