@@ -35,108 +35,53 @@ function extractKernSegments(kern) {
 }
 
 function extractPhraseLyrics(segment, kern, phraseIndex) {
-  const rows = kern.split(/\r?\n/);
-  const segmentRows = segment.split(/\r?\n/);
+  const header = kern.split(/\r?\n/)
+    .find(row => row.startsWith('**'));
 
-  const headerIndex = rows.findIndex(row =>
-    row.startsWith('**')
+  if (!header) return '';
+
+  const textCount = header.split('\t')
+    .filter(type => type === '**text').length;
+
+  if (textCount === 0) return '';
+
+  const streams = Array.from(
+    { length: textCount },
+    () => []
   );
 
-  if (headerIndex === -1) return '';
+  const rows = segment.split(/\r?\n/)
+    .filter(row =>
+      row.trim() &&
+      !row.startsWith('!') &&
+      !row.startsWith('*') &&
+      !row.startsWith('=')
+    );
 
-  let spines = rows[headerIndex].split('\t');
-
-  // Track the first original lyric spine.
-  let lyricIds = spines.map((type, i) =>
-    type === '**text' ? 'text-' + i : null
-  );
-
-  let currentPhraseIndex = -1;
-
-  let insidePhrase = false;
-  let selectedLyricId = null;
-
-  const lyrics = [];
-
-  for (let i = headerIndex + 1; i < rows.length; i++) {
-    const row = rows[i];
-
-    if (!row || row.startsWith('!')) continue;
-
+  rows.forEach(function(row) {
     const cols = row.split('\t');
 
-    if (cols.length !== spines.length) continue;
+    // For BC003-style files, lyric spines
+    // occupy the final columns.
+    const textCols = cols.slice(-textCount);
 
-    // Handle spine splits and terminations.
-    if (cols.every(token => token.startsWith('*'))) {
-      const nextSpines = [];
-      const nextIds = [];
-
-      cols.forEach((token, index) => {
-        if (token === '*^') {
-          nextSpines.push(spines[index], spines[index]);
-
-          nextIds.push(
-            lyricIds[index],
-            lyricIds[index]
-          );
-        } else if (token !== '*-') {
-          nextSpines.push(spines[index]);
-          nextIds.push(lyricIds[index]);
-        }
-      });
-
-      spines = nextSpines;
-      lyricIds = nextIds;
-      continue;
-    }
-
-    if (
-  cols[0] &&
-  cols[0].includes('{') &&
-  !insidePhrase
-) {
-  currentPhraseIndex++;
-  insidePhrase = currentPhraseIndex === phraseIndex;
-}
-
-    if (!insidePhrase) continue;
-
-    if (!cols[0].startsWith('=')) {
-      // Select the first text spine with real lyrics.
-      if (selectedLyricId === null) {
-        const firstLyricIndex = cols.findIndex((token, index) =>
-          spines[index] === '**text' &&
-          token !== '.' &&
-          token !== '' &&
-          !token.startsWith('!')
-        );
-
-        if (firstLyricIndex !== -1) {
-          selectedLyricId = lyricIds[firstLyricIndex];
-        }
+    textCols.forEach(function(token, index) {
+      if (
+        token &&
+        token !== '.' &&
+        !token.startsWith('!')
+      ) {
+        streams[index].push(token);
       }
+    });
+  });
 
-      cols.forEach((token, index) => {
-        if (
-          selectedLyricId !== null &&
-          lyricIds[index] === selectedLyricId &&
-          spines[index] === '**text' &&
-          token !== '.' &&
-          token !== '' &&
-          !token.startsWith('!')
-        ) {
-          lyrics.push(token);
-        }
-      });
-    }
+  // Display only the first original lyric version.
+  const first = streams.find(
+    tokens => tokens.length > 0
+  ) || [];
 
-    if (cols[0] && cols[0].includes('}')) {
-  break;
-}
-  }
-
-  return lyrics
+  return first
     .join(' ')
     .replace(/-\s+/g, '-')
     .replace(/\s+([,.;!?])/g, '$1')
