@@ -534,14 +534,27 @@ function displayWork(id) {
 				const melodyParam = DATA1520.cgi.melody || "";
 				let displayKern = melodyParam ? markMelodicMatches(kern, melodyParam) : kern;
 				if (CADENCE_FILTER_ACTIVE) {
-					const result = markCadences(displayKern);
-					displayKern = result.markedKern;
-					LAST_CADENCE_LIST = result.cadences;
-					renderCadencePanel(LAST_CADENCE_LIST);
-				} else {
-					const panel = document.getElementById('cadence-panel');
-					if (panel) panel.classList.add('hidden');
-				}
+    // Preserve existing cadence detection and score highlighting.
+    const result = markCadences(displayKern);
+    displayKern = result.markedKern;
+
+    LAST_CADENCE_LIST = result.cadences;
+
+    // Extract all explicitly marked melodic segments.
+    const segments = extractMelodicSegments(kern);
+
+    // Store segment data separately from classified cadences.
+    window.LAST_MELODIC_SEGMENTS = segments;
+
+    // Temporarily retain the existing cadence panel.
+    renderCadencePanel(segments, LAST_CADENCE_LIST, kern);
+
+} else {
+    window.LAST_MELODIC_SEGMENTS = [];
+
+    const panel = document.getElementById("cadence-panel");
+    if (panel) panel.classList.add("hidden");
+}
 				document.getElementById("my-score").textContent = displayKern;
 				displayHumdrum(hnpOptions);
 				KernPlayer.load(kern);  // player uses original (unmarked) kern

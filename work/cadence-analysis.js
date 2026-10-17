@@ -9,36 +9,39 @@ const _CA_PITCH_NAMES = ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
 
 // Convert a kern note token to an absolute MIDI number.
 // Returns null if the token is not a pitched note.
-function _tokenToMidi(token) {
-	if (!token || token === '.') return null;
-	const ch = token[0];
-	if (ch === 'r') return null;           // rest
-	if (ch === 'q' || ch === 'Q') return null; // grace note
-	if (ch === '_') return null;           // tied continuation
+function _tokenToMidi(token, keySignature = {}) {
+    if (!token || token === '.') return null;
 
-	const m = token.match(/([A-Ga-g]+)([#\-n]*)/);
-	if (!m) return null;
+    const m = token.match(/([A-Ga-g]+)([#\-n]*)/);
+    if (!m) return null;
 
-	const letters = m[1];
-	const rawAcc  = m[2];
-	const isLower = letters[0] === letters[0].toLowerCase();
-	const letter  = letters[0].toUpperCase();
-	const count   = letters.length;
+    const letters = m[1];
+    const rawAcc = m[2];
+    const letter = letters[0].toUpperCase();
+    const isLower = letters[0] === letters[0].toLowerCase();
 
-	const BASE_PC = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
-	const pc = BASE_PC[letter];
-	if (pc === undefined) return null;
+    const BASE_PC = {
+        C: 0, D: 2, E: 4, F: 5,
+        G: 7, A: 9, B: 11
+    };
 
-	// Octave: lowercase c=4, cc=5 …  uppercase C=3, CC=2 …
-	const octave = isLower ? (4 + count - 1) : (3 - (count - 1));
+    const octave = isLower
+        ? 4 + letters.length - 1
+        : 3 - (letters.length - 1);
 
-	let acc = 0;
-	for (const ch of rawAcc) {
-		if (ch === '#') acc++;
-		else if (ch === '-') acc--;
-	}
+    let accidental = keySignature[letter] || 0;
 
-	return pc + acc + (octave + 1) * 12;
+    // Explicit accidentals override the key signature.
+    if (rawAcc.length > 0) {
+        accidental = 0;
+
+        for (const ch of rawAcc) {
+            if (ch === '#') accidental++;
+            if (ch === '-') accidental--;
+        }
+    }
+
+    return BASE_PC[letter] + accidental + (octave + 1) * 12;
 }
 
 // Return duration of a kern token in quarter notes.
@@ -78,6 +81,7 @@ function parseKernSpines(kernText) {
 	const voices = kernCols.map(() => []);
 	const qpos   = kernCols.map(() => 0);
 	let   measure = 0;
+	let keySignature = {};
 
 	for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
 		const line = lines[lineIdx];
@@ -87,7 +91,25 @@ function parseKernSpines(kernText) {
 		if (ch === '!') continue;          // comment
 		if (line.startsWith('**')) continue;
 		if (line.startsWith('*-')) break;  // spine terminator
-		if (ch === '*') continue;          // interpretation
+		if (ch === '*') {
+    const keyMatch = line.match(/\*k\[([^\]]*)\]/);
+
+    if (keyMatch) {
+        keySignature = {};
+
+        const accidentals =
+            keyMatch[1].match(/[A-Ga-g][#-]/g) || [];
+
+        for (const accidental of accidentals) {
+            const letter = accidental[0].toUpperCase();
+
+            keySignature[letter] =
+                accidental[1] === '#' ? 1 : -1;
+        }
+    }
+
+    continue;
+}
 
 		if (ch === '=') {
 			const bm = line.match(/^=(\d+)/);
@@ -114,7 +136,7 @@ function parseKernSpines(kernText) {
 	}
 			if (token[0] === 'q' || token[0] === 'Q') continue;
 
-			const midi = _tokenToMidi(token);
+			const midi = _tokenToMidi(token, keySignature);
 			if (midi === null) {
 				if (dur > 0) qpos[vi] += dur;
 				continue;
@@ -302,9 +324,83 @@ function markCadences(kernText) {
 	return { markedKern: newLines.join('\n'), cadences };
 }
 
+//////////////////////////////
+//
+// extractMelodicSegments -- Extract the last three notes
+// from each explicitly marked melodic phrase.
+//
+
+function extractMelodicSegments(kernText) {
+    const lines = kernText.split(/\r?\n/);
+    const voices = parseKernSpines(kernText);
+    if (!voices.length) return [];
+
+    const melody = voices[0];
+    const segments = [];
+
+    // Map parsed notes to their original lines.
+    const noteByLine = new Map(
+        melody.map(note => [note.lineIdx, note])
+    );
+
+    const spineIdx = melody.length ? melody[0].spineIdx : 0;
+
+    let current = [];
+    let inside = false;
+
+    function finishSegment() {
+        if (!inside || current.length === 0) {
+            current = [];
+            inside = false;
+            return;
+        }
+
+        const lastThree = current.slice(-3);
+        const finalNote = current[current.length - 1];
+
+        segments.push({
+            segment: segments.length + 1,
+            measure: finalNote.measure,
+            lastThreeMidi: lastThree.map(note => note.midi),
+            finalMidi: finalNote.midi
+        });
+
+        current = [];
+        inside = false;
+    }
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (!line || /^[!*=]/.test(line)) continue;
+
+        const fields = line.split('\t');
+        const token = fields[spineIdx] || '';
+
+        if (token.includes('{')) {
+            if (inside) finishSegment();
+            current = [];
+            inside = true;
+        }
+
+        if (!inside) continue;
+
+        const note = noteByLine.get(i);
+        if (note) current.push(note);
+
+        // Works for both notes ending with } and rests like 2r}.
+        if (token.includes('}')) {
+            finishSegment();
+        }
+    }
+
+    return segments;
+}
+
 // Expose to global scope
 window.parseKernSpines = parseKernSpines;
 window.detectCadences  = detectCadences;
 window.markCadences    = markCadences;
+window.extractMelodicSegments = extractMelodicSegments;
 
 })();

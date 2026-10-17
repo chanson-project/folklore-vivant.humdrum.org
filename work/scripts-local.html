@@ -568,24 +568,130 @@ function displayCadences() {
 // renderCadencePanel -- Build the inline cadence list below the score.
 //
 
-function renderCadencePanel(cadences) {
-	const panel = document.getElementById("cadence-panel");
-	if (!panel) return;
+function renderCadencePanel(segments, cadences, kernText) {
+    const panel = document.getElementById("cadence-panel");
+    if (!panel) return;
 
-	if (!cadences || cadences.length === 0) {
-		panel.innerHTML = `<div class="cadence-panel-heading">Cadences</div><p class="cadence-none">${t("work.cadence_none")}</p>`;
-		panel.classList.remove("hidden");
-		return;
-	}
+    const key = _kernKey(kernText);
 
-	const rows = cadences.map(function(cad) {
-		const typeClass = cad.type === "authentic" ? "cadence-type-authentic" : "cadence-type-phrygian";
-		const typeLabel = t("work.cadence_" + cad.type);
-		return `<tr><td>m. ${cad.measure}</td><td class="${typeClass}">${typeLabel}</td><td class="cadence-pitch">→ ${cad.pitchCenter}</td></tr>`;
-	}).join("");
+    const pitchNames = [
+        "C", "C#", "D", "Eb", "E", "F",
+        "F#", "G", "Ab", "A", "Bb", "B"
+    ];
 
-	panel.innerHTML = `<div class="cadence-panel-heading">Cadences</div><table class="cadence-table"><tbody>${rows}</tbody></table>`;
-	panel.classList.remove("hidden");
+    function pitchName(midi) {
+        return pitchNames[((midi % 12) + 12) % 12];
+    }
+
+    function degreeName(midi) {
+        return _pitchToDegree(
+            pitchName(midi),
+            key.tonic,
+            key.isMinor
+        ) || "?";
+    }
+
+    const tonicName = pitchName(key.tonic);
+    const keyLabel = tonicName + (key.isMinor ? " minor" : " major");
+
+    let showDegrees = false;
+
+    function renderTable() {
+        if (!segments || segments.length === 0) {
+            panel.innerHTML = `
+                <div class="cadence-panel-heading">
+                    Melodic Cadences
+                </div>
+                <p class="cadence-none">
+                    No marked melodic segments found.
+                </p>
+            `;
+            panel.classList.remove("hidden");
+            return;
+        }
+
+        const rows = segments.map(function(segment) {
+            const pitches = segment.lastThreeMidi.map(
+                showDegrees ? degreeName : pitchName
+            );
+
+            const finalPitch = showDegrees
+                ? degreeName(segment.finalMidi)
+                : pitchName(segment.finalMidi);
+
+            // Match existing classified cadences by ending measure.
+            const classification = (cadences || []).find(
+                c => c.measure === segment.measure
+            );
+
+            const type = classification
+                ? t("work.cadence_" + classification.type)
+                : "—";
+
+            return `
+                <tr>
+                    <td>${segment.segment}</td>
+                    <td>${keyLabel}</td>
+                    <td>m. ${segment.measure}</td>
+                    <td class="cadence-pitch">
+                        ${pitches.join(" – ")}
+                    </td>
+                    <td class="cadence-pitch">
+                        ${finalPitch}
+                    </td>
+                    <td>${type}</td>
+                </tr>
+            `;
+        }).join("");
+
+        panel.innerHTML = `
+            <div class="cadence-panel-heading">
+                Melodic Cadences
+            </div>
+
+            <div class="cadence-controls">
+                <button type="button"
+                        id="cadence-notation-toggle">
+                    ${showDegrees
+                        ? "Show Pitch Names"
+                        : "Show Scale Degrees"}
+                </button>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table class="cadence-table">
+                    <thead>
+                        <tr>
+                            <th>Segment</th>
+                            <th>Key</th>
+                            <th>Measure</th>
+                            <th>Last 3 Pitches</th>
+                            <th>Final Pitch</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        panel.classList.remove("hidden");
+
+        const toggle = panel.querySelector(
+            "#cadence-notation-toggle"
+        );
+
+        if (toggle) {
+            toggle.addEventListener("click", function() {
+                showDegrees = !showDegrees;
+                renderTable();
+            });
+        }
+    }
+
+    renderTable();
 }
 
 
