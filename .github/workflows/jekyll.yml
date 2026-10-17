@@ -13,6 +13,9 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    # Automatically update metadata every hour
+  schedule:
+    - cron: '17 * * * *'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -43,6 +46,11 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+      - name: Download Latest Metadata
+        run: |
+          make download
+          python3 -m json.tool _includes/metadata/works.json > /dev/null
+          python3 -m json.tool _includes/metadata/sources.json > /dev/null
       - name: Generate Search Indexes
         run: |
           make melodic-index
