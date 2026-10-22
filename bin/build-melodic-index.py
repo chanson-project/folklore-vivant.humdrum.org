@@ -34,7 +34,7 @@ WORKS_JSON = Path("_includes/metadata/works.json")
 OUTPUT     = Path("assets/melodic-index.json")
 
 # 2-char work-ID prefix → subdirectory in the encoding repo
-DIR_MAP = {"BC": "bc", "EG": "eg", "MB": "mb"}
+DIR_MAP = {"BC": "bc", "EG": "eg", "MB": "mb", "VQ": "vq"}
 
 # Semitone distance from tonic → scale-degree label, for major and minor keys.
 # Diatonic degrees are 1–7; chromatic alterations carry # or b prefix.
