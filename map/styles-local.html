@@ -1,0 +1,28 @@
+<style>
+  /* Minima wraps page content in a narrow .wrapper; widen only this map page. */
+  main.page-content > .wrapper { max-width: 1360px; }
+  .song-map-page { max-width: 1320px; margin: 0 auto 44px; color: #2a2320; }
+  .song-map-intro h2 { margin: 4px 0 8px; font-size: clamp(1.6rem,3vw,2.35rem); }
+  .song-map-intro p { margin: 0 0 17px; line-height: 1.5; color: #5a4e47; }
+  .song-map-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 13px; background: #fff7e6; border: 1px solid #eadcc8; border-radius: 14px; }
+  .song-map-toolbar label { font-weight: 700; font-size: 0.95rem; }
+  .song-map-toolbar select, .song-map-toolbar input, .song-map-button { border: 1px solid #cbb9a6; border-radius: 9px; min-height: 39px; box-sizing: border-box; padding: 7px 10px; background: white; color: #2a2320; font: inherit; }
+  .song-map-toolbar input { flex: 1 1 180px; min-width: 140px; }
+  .song-map-button { cursor: pointer; background: #fff; font-weight: 600; }
+  .song-map-button:hover, .song-map-button:focus-visible { background: #e7f7f9; border-color: #3bbfce; }
+  .song-map-summary { color: #66574c; font-size: 0.91rem; min-height: 1.6em; margin: 12px 0 9px; }
+  #canada-song-map { height: clamp(460px,65vh,750px); width: 100%; border-radius: 16px; border: 2px solid #edddc5; background: #dce9ed; position: relative; z-index: 0; isolation: isolate; }
+  .song-map-note { font-size: 0.88rem; margin-top: 12px; color: #75665b; line-height: 1.5; }
+  .song-map-pin { background: #e76f51; color: white; width: 34px; height: 34px; border-radius: 17px 17px 17px 4px; transform: rotate(-45deg); border: 2px solid white; display: grid; place-items: center; box-shadow: 0 2px 6px #0005; }
+  .song-map-pin span { transform: rotate(45deg); font-size: 12px; font-weight: 800; }
+  .song-map-popup { min-width: 210px; max-width: 300px; font: inherit; }
+  .song-map-popup h3 { font-size: 1.05rem; margin: 0 0 3px; }
+  .song-map-popup p { margin: 0 0 8px; color: #66574c; font-size: 0.83rem; }
+  .song-map-songlist { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow-y: auto; }
+  .song-map-songlist li { padding: 5px 0; border-bottom: 1px solid #eee5da; line-height: 1.25; }
+  .song-map-songlist a { color: #186d87; text-decoration: none; font-weight: 600; }
+  .song-map-songlist a:hover { text-decoration: underline; }
+  .song-map-songlist small { display: block; color: #85776a; font-size: 0.73rem; margin-top: 2px; }
+  .song-map-empty { background: #fff7e6; padding: 9px 12px; border-radius: 9px; }
+  @media (max-width: 690px) { .song-map-toolbar { align-items: stretch; } .song-map-toolbar input { flex-basis: 100%; } #canada-song-map { height: 62vh; min-height: 410px; } }
+</style>

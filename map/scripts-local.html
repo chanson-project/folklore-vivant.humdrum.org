@@ -1,0 +1,211 @@
+<script>
+/*
+ * Explore Map (Canada) — v1
+ * Data comes from the same Jekyll metadata include used elsewhere on the site.
+ * Coordinates below are representative place locations, NOT recording sites.
+ * Add locations only after verifying them with an authoritative gazetteer.
+ */
+(function () {
+  'use strict';
+
+  const WORKS = {% include metadata/works.json %};
+  const FIELD = {
+    id: {{ site.fields.works.id | jsonify }},
+    title: {{ site.fields.works.title | jsonify }},
+    origin: {{ site.fields.works.origin | jsonify }}
+  };
+  const WORK_URL = {{ '/work/' | relative_url | jsonify }};
+
+  // Representative coordinates from Canadian geographical-name records.
+  // Keys are "normalized locality|normalized province".
+  const VERIFIED_LOCATIONS = {
+    'eboulements|quebec': { name: 'Les Éboulements', province: 'Québec', lat: 47.479816, lng: -70.317843 },
+    'les eboulements|quebec': { name: 'Les Éboulements', province: 'Québec', lat: 47.479816, lng: -70.317843 },
+    'port daniel|quebec': { name: 'Port-Daniel', province: 'Québec', lat: 48.179502, lng: -64.970588 },
+    'tadoussac|quebec': { name: 'Tadoussac', province: 'Québec', lat: 48.150000, lng: -69.716667 },
+    'beauharnois|quebec': { name: 'Beauharnois', province: 'Québec', lat: 45.294300, lng: -73.884540 },
+    'saint irenee|quebec': { name: 'Saint-Irénée', province: 'Québec', lat: 47.570556, lng: -70.208056 },
+    'roberval|quebec': { name: 'Roberval', province: 'Québec', lat: 48.517771, lng: -72.221996 },
+    'temiscouata|quebec': { name: 'Témiscouata', province: 'Québec', lat: 47.683333, lng: -68.883333 }
+  };
+
+  function normalize(value) {
+    return String(value || '').normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim().replace(/\s+/g, ' ');
+  }
+
+  function resolvePlace(raw) {
+    const parts = String(raw || '').split(',').map(normalize).filter(Boolean);
+    if (parts.length < 2) return null;
+    // Explicit town + province only. "Québec, Canada" by itself is too vague.
+    let province = parts[1];
+    if (province === 'qc' || province === 'province de quebec') province = 'quebec';
+    if (province === 'nb' || province === 'nouveau brunswick') province = 'new brunswick';
+    return VERIFIED_LOCATIONS[`${parts[0]}|${province}`] || null;
+  }
+
+  const isFrench = () => window.LANG === 'fr';
+  const tr = (en, fr) => isFrench() ? fr : en;
+  const mapElement = document.getElementById('canada-song-map');
+  const summary = document.getElementById('song-map-summary');
+  const collectionSelect = document.getElementById('song-map-collection');
+  const searchInput = document.getElementById('song-map-search');
+  const resetButton = document.getElementById('song-map-reset');
+  const focusButton = document.getElementById('song-map-focus');
+  if (!mapElement || !summary) return;
+  if (typeof L === 'undefined') {
+    summary.textContent = tr('The map library did not load. Check your connection.', 'La bibliothèque de cartes ne s’est pas chargée. Vérifiez votre connexion.');
+    return;
+  }
+
+  const records = [];
+  let skippedNoPlace = 0;
+  let skippedUnmatched = 0;
+  const unrecognizedPlaces = new Set();
+  for (const entry of (Array.isArray(WORKS) ? WORKS : [])) {
+    const id = String(entry[FIELD.id] || '').trim();
+    const area = String(entry[FIELD.origin] || '').trim();
+    if (!id || !area || /^(unknown|n\/a|na|none|inconnu|non renseigne)$/i.test(normalize(area))) {
+      skippedNoPlace++;
+      continue;
+    }
+    const place = resolvePlace(area);
+    if (!place) {
+      skippedUnmatched++;
+      unrecognizedPlaces.add(area);
+      continue;
+    }
+    const collection = (id.match(/^[a-z]+/i) || ['Other'])[0].toUpperCase();
+    records.push({
+      id: id,
+      title: String(entry[FIELD.title] || id).trim(),
+      area: area,
+      collection: collection,
+      place: place,
+      searchText: normalize([id, entry[FIELD.title], area, collection].join(' '))
+    });
+  }
+
+  // Useful when extending coverage: see the unmapped !ARE values in console.
+  if (unrecognizedPlaces.size) {
+    console.info('[Explore Map] Unmapped !!!ARE values:', [...unrecognizedPlaces].sort());
+  }
+
+  const allCollections = [...new Set(records.map(s => s.collection))].sort();
+  for (const code of allCollections) {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = code;
+    collectionSelect.appendChild(opt);
+  }
+  collectionSelect.options[0].textContent = tr('All collections', 'Toutes les collections');
+
+  const map = L.map(mapElement, {
+    minZoom: 3, maxZoom: 16,
+    zoomControl: true,
+    maxBounds: [[35, -155], [85, -43]],
+    maxBoundsViscosity: 0.7
+  });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  const CANADA_BOUNDS = L.latLngBounds([[42, -141], [76, -52]]);
+  map.fitBounds(CANADA_BOUNDS, {padding: [12, 12]});
+
+  // Marker clustering groups pins that overlap at national scale; graceful fallback.
+  const markers = typeof L.markerClusterGroup === 'function'
+    ? L.markerClusterGroup({ showCoverageOnHover: false, spiderfyOnMaxZoom: true, maxClusterRadius: 52 })
+    : L.layerGroup();
+  map.addLayer(markers);
+
+  function makePin(count) {
+    return L.divIcon({
+      className: '',
+      html: `<div class="song-map-pin"><span>${count}</span></div>`,
+      iconSize: [38, 38], iconAnchor: [18, 37], popupAnchor: [0, -30]
+    });
+  }
+
+  function createPopup(place, songs) {
+    // Construct DOM safely: titles and locations come from editable metadata.
+    const root = document.createElement('div');
+    root.className = 'song-map-popup';
+    const heading = document.createElement('h3');
+    heading.textContent = `${place.name}, ${place.province}`;
+    root.appendChild(heading);
+    const description = document.createElement('p');
+    description.textContent = tr(`${songs.length} song(s)`, `${songs.length} chanson(s)`);
+    root.appendChild(description);
+    const list = document.createElement('ul');
+    list.className = 'song-map-songlist';
+    for (const song of songs.slice().sort((a, b) => a.title.localeCompare(b.title))) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `${WORK_URL}?id=${encodeURIComponent(song.id)}`;
+      a.textContent = song.title;
+      const small = document.createElement('small');
+      small.textContent = `${song.id} · ${song.collection}`;
+      li.appendChild(a);
+      li.appendChild(small);
+      list.appendChild(li);
+    }
+    root.appendChild(list);
+    return root;
+  }
+
+  let visibleBounds = null;
+  function redraw() {
+    markers.clearLayers();
+    const query = normalize(searchInput.value);
+    const tokens = query ? query.split(' ') : [];
+    const selectedCollection = collectionSelect.value;
+    const subset = records.filter(s =>
+      (!selectedCollection || s.collection === selectedCollection) &&
+      tokens.every(token => s.searchText.includes(token))
+    );
+    const grouped = new Map();
+    for (const song of subset) {
+      const key = `${song.place.lat},${song.place.lng}`;
+      if (!grouped.has(key)) grouped.set(key, {place: song.place, songs: []});
+      grouped.get(key).songs.push(song);
+    }
+    const coordinates = [];
+    for (const group of grouped.values()) {
+      const p = group.place;
+      const marker = L.marker([p.lat, p.lng], {icon: makePin(group.songs.length)});
+      marker.bindTooltip(`${p.name}, ${p.province}`);
+      marker.bindPopup(createPopup(p, group.songs), {maxWidth: 330, minWidth: 210});
+      markers.addLayer(marker);
+      coordinates.push([p.lat, p.lng]);
+    }
+    visibleBounds = coordinates.length ? L.latLngBounds(coordinates) : null;
+    summary.textContent = tr(
+      `${subset.length} mapped song(s) across ${grouped.size} place(s) · ${skippedUnmatched + skippedNoPlace} other records not mapped`,
+      `${subset.length} chanson(s) sur la carte dans ${grouped.size} lieu(x) · ${skippedUnmatched + skippedNoPlace} autres notices non cartographiées`
+    );
+    summary.classList.toggle('song-map-empty', subset.length === 0);
+  }
+
+  collectionSelect.addEventListener('change', redraw);
+  searchInput.addEventListener('input', redraw);
+  resetButton.addEventListener('click', () => {
+    collectionSelect.value = '';
+    searchInput.value = '';
+    redraw();
+    map.fitBounds(CANADA_BOUNDS, {padding: [12, 12]});
+  });
+  focusButton.addEventListener('click', () => {
+    if (!visibleBounds) return;
+    if (visibleBounds.getSouthWest().equals(visibleBounds.getNorthEast())) {
+      map.setView(visibleBounds.getCenter(), 9);
+    } else {
+      map.fitBounds(visibleBounds.pad(0.20), {padding: [25, 25], maxZoom: 9});
+    }
+  });
+  redraw();
+})();
+</script>
