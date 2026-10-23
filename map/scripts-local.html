@@ -26,7 +26,46 @@
     'beauharnois|quebec': { name: 'Beauharnois', province: 'Québec', lat: 45.294300, lng: -73.884540 },
     'saint irenee|quebec': { name: 'Saint-Irénée', province: 'Québec', lat: 47.570556, lng: -70.208056 },
     'roberval|quebec': { name: 'Roberval', province: 'Québec', lat: 48.517771, lng: -72.221996 },
-    'temiscouata|quebec': { name: 'Témiscouata', province: 'Québec', lat: 47.683333, lng: -68.883333 }
+    'temiscouata|quebec': { name: 'Témiscouata', province: 'Québec', lat: 47.683333, lng: -68.883333 },
+    // Additional CGNDB locations (official representative geographical points; not recording coordinates).
+    // Gaspé: https://geonames.nrcan.gc.ca/search-place-names/unique?id=EGLSD
+    'gaspe|quebec': { name: 'Gaspé', province: 'Québec', lat: 48.824618, lng: -64.476254 },
+    // Île d'Orléans: https://geonames.nrcan.gc.ca/search-place-names/unique?id=EHMJE
+    'ile d orleans|quebec': { name: 'Île d’Orléans', province: 'Québec', lat: 46.935916, lng: -70.947271 },
+    // Saint-Antonin: https://geonames.nrcan.gc.ca/search-place-names/unique?id=ESJGI
+    'saint antonin|quebec': { name: 'Saint-Antonin', province: 'Québec', lat: 47.7666667, lng: -69.4833333 },
+    // v3: representative locality coordinates, not exact recording sites.
+    // La Tourelle is now part of Sainte-Anne-des-Monts; representative point in the Tourelle village area:
+    // https://toponymie.gouv.qc.ca/ct/ToposWeb/Fiche.aspx?no_seq=439469
+    'la tourelle|quebec': { name: 'Tourelle (Gaspésie)', province: 'Québec', lat: 49.15551, lng: -66.41843 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=EMGWI
+    'kamouraska|quebec': { name: 'Kamouraska', province: 'Québec', lat: 47.56618, lng: -69.86791 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=ESBFE
+    'notre dame du portage|quebec': { name: 'Notre-Dame-du-Portage', province: 'Québec', lat: 47.765619, lng: -69.6098 },
+    // Historic Berthier-en-Haut = Berthierville: https://toponymie.gouv.qc.ca/ct/ToposWeb/Fiche.aspx?no_seq=5375
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=EFNEP
+    'berthier en haut|quebec': { name: 'Berthierville (Berthier-en-Haut)', province: 'Québec', lat: 46.083899, lng: -73.175688 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=EGZSK
+    'levis|quebec': { name: 'Lévis', province: 'Québec', lat: 46.758172, lng: -71.240366 },
+    // https://toponymie.gouv.qc.ca/ct/ToposWeb/Fiche.aspx?no_seq=42055
+    'mont carmel|quebec': { name: 'Mont-Carmel (Kamouraska)', province: 'Québec', lat: 47.4417, lng: -69.85542 },
+    // Historical Argentenay near the NE tip of Île d'Orléans; pin at Pointe Argentenay:
+    // https://toponymie.gouv.qc.ca/ct/ToposWeb/fiche.aspx?no_seq=1966
+    'argentenay|quebec': { name: 'Argentenay (Île d’Orléans)', province: 'Québec', lat: 47.02446, lng: -70.79863 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=EMAOT
+    'baie saint paul|quebec': { name: 'Baie-Saint-Paul', province: 'Québec', lat: 47.4413889, lng: -70.5075 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=DAHFF
+    'coal branch|new brunswick': { name: 'Coal Branch', province: 'New Brunswick', lat: 46.355612, lng: -65.149533 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=DADHJ
+    'moncton|new brunswick': { name: 'Moncton', province: 'New Brunswick', lat: 46.099479, lng: -64.799802 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=EQXNR
+    'saint anne des monts|quebec': { name: 'Sainte-Anne-des-Monts', province: 'Québec', lat: 49.13001, lng: -66.487669 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=DAEBL
+    'saint antoine|new brunswick': { name: 'Saint-Antoine (Kent)', province: 'New Brunswick', lat: 46.362864, lng: -64.752638 },
+    // https://toponymie.gouv.qc.ca/ct/ToposWeb/fiche.aspx?no_seq=56297
+    'sainte marie de beauce|quebec': { name: 'Sainte-Marie (Beauce)', province: 'Québec', lat: 46.43838, lng: -71.02131 },
+    // https://geonames.nrcan.gc.ca/search-place-names/unique?id=EHZYW
+    'saint hilarion|quebec': { name: 'Saint-Hilarion (Charlevoix)', province: 'Québec', lat: 47.578549, lng: -70.402019 }
   };
 
   function normalize(value) {
@@ -39,12 +78,21 @@
 
   function resolvePlace(raw) {
     const parts = String(raw || '').split(',').map(normalize).filter(Boolean);
+    // Accept town, province[, Canada] and town, region, province, Canada.
+    // Do not guess a province from the second comma-delimited segment.
     if (parts.length < 2) return null;
-    // Explicit town + province only. "Québec, Canada" by itself is too vague.
-    let province = parts[1];
-    if (province === 'qc' || province === 'province de quebec') province = 'quebec';
-    if (province === 'nb' || province === 'nouveau brunswick') province = 'new brunswick';
-    return VERIFIED_LOCATIONS[`${parts[0]}|${province}`] || null;
+    const provinces = {
+      'quebec': 'quebec', 'qc': 'quebec', 'province de quebec': 'quebec',
+      'new brunswick': 'new brunswick', 'nouveau brunswick': 'new brunswick',
+      'nb': 'new brunswick'
+    };
+    const withoutCountry = parts[parts.length - 1] === 'canada'
+      ? parts.slice(0, -1) : parts;
+    if (withoutCountry.length < 2) return null;
+    const province = provinces[withoutCountry[withoutCountry.length - 1]];
+    if (!province) return null;
+    // First component is a locality, not a region or recording location.
+    return VERIFIED_LOCATIONS[`${withoutCountry[0]}|${province}`] || null;
   }
 
   const isFrench = () => window.LANG === 'fr';
@@ -140,6 +188,10 @@
     const description = document.createElement('p');
     description.textContent = tr(`${songs.length} song(s)`, `${songs.length} chanson(s)`);
     root.appendChild(description);
+    const accuracy = document.createElement('p');
+    accuracy.className = 'song-map-geography-note';
+    accuracy.textContent = tr('Pin marks an approximate locality, not a recording address.', 'Le repère indique une localité approximative, pas l’adresse d’enregistrement.');
+    root.appendChild(accuracy);
     const list = document.createElement('ul');
     list.className = 'song-map-songlist';
     for (const song of songs.slice().sort((a, b) => a.title.localeCompare(b.title))) {

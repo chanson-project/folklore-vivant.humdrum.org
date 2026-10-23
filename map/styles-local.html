@@ -25,4 +25,11 @@
   .song-map-songlist small { display: block; color: #85776a; font-size: 0.73rem; margin-top: 2px; }
   .song-map-empty { background: #fff7e6; padding: 9px 12px; border-radius: 9px; }
   @media (max-width: 690px) { .song-map-toolbar { align-items: stretch; } .song-map-toolbar input { flex-basis: 100%; } #canada-song-map { height: 62vh; min-height: 410px; } }
+
+  /* Explore Map language visibility fix */
+  html[lang="en"] .song-map-page [data-lang="en"],
+  html[lang="fr"] .song-map-page [data-lang="fr"] {
+    display: revert;
+  }
+
 </style>
