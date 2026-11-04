@@ -9,7 +9,6 @@ This codebase was forked from **[The 1520s Project](https://github.com/benory/15
 different repertoire.
 
 - **Live site:** https://folklore-vivant.humdrum.org
-- **License:** [CC BY-NC 4.0](LICENSE)
 
 ---
 
