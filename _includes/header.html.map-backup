@@ -1,0 +1,475 @@
+{% include i18n.html %}
+{% include scripts/field-names.html %}
+
+<style>
+
+/* ── Language toggle ─────────────────────────────────────────────────────── */
+#lang-toggle {
+  margin-left: 10px;
+  padding: 7px 16px;
+  font-size: 0.9em;
+  font-weight: 700;
+  border: 2.5px solid rgba(59,191,206,0.45);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  color: #3BBFCE;
+  letter-spacing: 0.05em;
+  font-family: "Fredoka", "Nunito", sans-serif;
+  transition: background 0.18s, color 0.18s, transform 0.12s;
+}
+#lang-toggle:hover {
+  background: #3BBFCE;
+  color: #fff;
+  border-color: #3BBFCE;
+  transform: scale(1.06);
+}
+
+/* ── Banner ──────────────────────────────────────────────────────────────── */
+.banner {
+  flex-basis: 100%;
+  width: 100%;
+}
+.banner-wrap {
+  display: flex;
+  align-items: center;
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #FFF7E6;
+}
+.banner-wrap img.desktop-banner {
+  display: block;
+  width: 42%;
+  height: auto;
+}
+.banner-tagline {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 5%;
+  font-size: clamp(1.05em, 2.2vw, 1.4em);
+  font-weight: 600;
+  font-family: "Fredoka", "Nunito", sans-serif;
+  color: #2A2320;
+  line-height: 1.35;
+}
+
+.site-header {
+  background: rgba(255, 247, 230, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 3px solid rgba(249,200,70,0.45);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  isolation: isolate;
+  min-height: 76px;
+}
+
+@media (min-width: 769px) {
+  .nav-trigger {
+    display: none !important;
+  }
+}
+
+.site-header .wrapper {
+  padding-top: 10px;
+  padding-bottom: 6px;
+}
+
+.site-header .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.site-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none !important;
+}
+.site-logo-icon {
+  display: block;
+  height: 52px;
+  width: auto;
+  flex-shrink: 0;
+}
+.site-name {
+  font-family: "Fredoka", "Nunito", sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  color: #2A2320;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+.site-name em {
+  font-style: normal;
+  color: #FF8C42;
+}
+
+/* Fredoka + Nunito in nav */
+.site-nav, .site-header {
+  font-family: "Fredoka", "Nunito", -apple-system, sans-serif;
+}
+
+/* Ensure nav sits inline and vertically centered */
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+.site-nav .page-link, .site-nav .dropdown-trigger {
+  font-size: 1.05em;
+  font-weight: 600;
+  font-family: "Fredoka", "Nunito", sans-serif;
+}
+
+.site-nav .page-link {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 7px 13px;
+  color: #5A4E47;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
+}
+
+/* Dropdown container */
+.site-nav .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.site-nav .dropdown::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  top: 100%;
+}
+
+/* Dropdown content */
+.site-nav .dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin-top: 8px;
+  z-index: 200;
+
+  background: rgba(255, 250, 236, 0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  will-change: transform;
+  transform: translateZ(0);
+
+  border: 2px solid rgba(249,200,70,0.35);
+  border-radius: 16px;
+  padding: 6px;
+  min-width: 160px;
+
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+
+/* Dropdown links */
+.site-nav .dropdown-content a {
+  color: #5A4E47;
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  display: block;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Fredoka", "Nunito", sans-serif;
+}
+
+/* Feedback button */
+#feedback-btn {
+  background: none;
+  border: 2.5px solid rgba(231,111,81,0.45);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 0.9em;
+  font-weight: 700;
+  cursor: pointer;
+  color: #E76F51;
+  letter-spacing: 0.04em;
+  margin-left: 6px;
+  font-family: "Fredoka", "Nunito", sans-serif;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.12s;
+}
+#feedback-btn:hover {
+  background: #E76F51;
+  color: #fff;
+  border-color: #E76F51;
+  transform: scale(1.06);
+}
+
+/* Feedback modal */
+.feedback-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 35, 32, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.feedback-overlay.open {
+  display: flex;
+}
+.feedback-modal {
+  background: rgba(255, 250, 236, 0.98);
+  border-radius: 24px;
+  box-shadow: 0 4px 0 rgba(249,200,70,0.4), 0 20px 56px rgba(0,0,0,0.16);
+  padding: 32px 32px 24px;
+  width: min(480px, 92vw);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.feedback-modal h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2A2320;
+  font-family: "Fredoka", "Nunito", sans-serif;
+}
+.feedback-modal p {
+  margin: 0;
+  font-size: 15px;
+  color: #7A6E68;
+  line-height: 1.55;
+}
+.feedback-modal textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: "Nunito", inherit;
+  border: 2px solid rgba(0, 0, 0, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.feedback-modal textarea:focus {
+  border-color: #3BBFCE;
+  box-shadow: 0 0 0 3px rgba(59,191,206,0.2);
+}
+.feedback-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.feedback-modal-buttons button {
+  padding: 10px 22px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Fredoka", "Nunito", sans-serif;
+  cursor: pointer;
+  border: 2px solid rgba(0, 0, 0, 0.14);
+  background: rgba(255, 255, 255, 0.8);
+  color: #2A2320;
+  transition: background 0.15s, transform 0.1s;
+}
+.feedback-modal-buttons button:hover {
+  background: rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+.feedback-modal-buttons .feedback-send {
+  background: #3BBFCE;
+  color: #fff;
+  border-color: #3BBFCE;
+}
+.feedback-modal-buttons .feedback-send:hover {
+  background: #2AAFC0;
+  border-color: #2AAFC0;
+}
+
+/* Nav link colours */
+.site-nav .page-link,
+.site-nav .dropdown-content a {
+  color: #5A4E47;
+}
+
+.site-nav .dropdown-content a:hover {
+  background-color: rgba(249,200,70,0.18);
+  color: #2A2320;
+}
+
+.site-nav .page-link:hover {
+  background-color: rgba(249,200,70,0.18);
+  color: #2A2320;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.site-nav .dropdown-trigger:hover {
+  background-color: transparent;
+  color: #5A4E47;
+}
+
+/* Show dropdown on hover */
+.site-nav .dropdown:hover > .dropdown-content,
+.site-nav .dropdown-content:hover {
+  display: block;
+}
+
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+  .banner-wrap {
+    flex-direction: column;
+  }
+
+  .banner-wrap img.desktop-banner {
+    width: 100%;
+  }
+
+  .banner-tagline {
+    padding: 12px 6%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+</style>
+
+<header class="site-header" role="banner">
+  <link type="image/x-icon" href="/images/favicon.png" rel="shortcut icon">
+  <div class="wrapper">
+    {%- assign default_paths = site.pages | map: "path" -%}
+    {%- assign page_paths = site.header_pages | default: default_paths -%}
+    <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
+      <img src="{{ '/images/logo-icon.svg' | relative_url }}" alt="" class="site-logo-icon">
+      <span class="site-name">folklore <em>vivant</em></span>
+    </a>
+
+    {%- if page_paths -%}
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          <a class="page-link" href="/about/" data-i18n="nav.about">about</a>
+
+          <div class="dropdown">
+            <span class="page-link" data-i18n="nav.documentation" style="cursor:pointer">documentation ▾</span>
+            <div class="dropdown-content">
+              <a href="/laforte/" data-i18n="nav.laforte">About Laforte</a>
+              <a href="/documentation/" data-i18n="nav.encoding_practices">Encoding Practices</a>
+            </div>
+          </div>
+
+          <a class="page-link" href="/repertoire/" data-i18n="nav.chansons">chansons</a>
+
+          <div class="dropdown">
+            <span class="page-link" data-i18n="nav.resources" style="cursor:pointer">resources ▾</span>
+            <div class="dropdown-content">
+              <a href="/education/" data-i18n="nav.education">Educational Resources</a>
+              <a href="/lesson-plans/" data-i18n="nav.lesson_plans">Lesson Plans</a>
+              <a href="/education/docs/" data-i18n="nav.tool_docs">Tool Documentation</a>
+              <a href="/sing/" data-i18n="nav.sing_along">Sing Along!</a>
+              <a href="/create-home/" data-i18n="nav.create">Create</a>
+            </div>
+          </div>
+
+          <div class="dropdown">
+            <span class="page-link" data-i18n="nav.sources" style="cursor:pointer">sources ▾</span>
+            <div class="dropdown-content">
+              <a href="/performances/" data-i18n="nav.performances">Performances</a>
+              <a href="/musicians/" data-i18n="nav.musicians">Musicians</a>
+              <a href="https://kern.humdrum.org/cgi-bin/browse?l=/vivant" target="_blank" rel="noopener">KernScores</a>
+            </div>
+          </div>
+
+          <button id="feedback-btn" class="page-link" onclick="openFeedbackModal()" data-i18n="nav.feedback" title="Send feedback" aria-label="Send feedback">Feedback</button>
+          <button id="lang-toggle" onclick="setLang(window.LANG === 'en' ? 'fr' : 'en')" title="Switch language" aria-label="Switch language">FR</button>
+        </div>
+      </nav>
+    {%- endif -%}
+    {% if page.url == "/" or page.url == "/index.html" %}
+    <div class="banner">
+      <div class="banner-wrap">
+        <img src="{{ '/images/banner.svg' | relative_url }}" alt="A cheerful folk music scene with a singing lark and musical notes" class="desktop-banner">
+        <div class="banner-tagline">
+          <span data-i18n="banner.subtitle">Exploring French-Canadian folk music in digital format</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</header>
+
+<div id="feedback-overlay" class="feedback-overlay" onclick="handleFeedbackOverlayClick(event)">
+  <div class="feedback-modal">
+    <h3 data-i18n="feedback.title">Send Feedback</h3>
+    <p data-i18n="feedback.description">Do you see a mistake in a score? Disagree with an editorial choice? Let us know.</p>
+    <textarea id="feedback-message" placeholder="Your message…" data-i18n-placeholder="feedback.placeholder"></textarea>
+    <div class="feedback-modal-buttons">
+      <button onclick="closeFeedbackModal()" data-i18n="feedback.cancel" title="Cancel feedback" aria-label="Cancel feedback">Cancel</button>
+      <button class="feedback-send" onclick="sendFeedback()" data-i18n="feedback.send" title="Send feedback" aria-label="Send feedback">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openFeedbackModal() {
+  document.getElementById("feedback-overlay").classList.add("open");
+  document.getElementById("feedback-message").focus();
+}
+
+function closeFeedbackModal() {
+  document.getElementById("feedback-overlay").classList.remove("open");
+  document.getElementById("feedback-message").value = "";
+}
+
+function handleFeedbackOverlayClick(e) {
+  if (e.target === document.getElementById("feedback-overlay")) {
+    closeFeedbackModal();
+  }
+}
+
+function sendFeedback() {
+  const message = document.getElementById("feedback-message").value.trim();
+  if (!message) return;
+  const subject = encodeURIComponent("Website Feedback");
+  const body    = encodeURIComponent(message);
+  window.open(`mailto:epoudrie@mail.ubc.ca?subject=${subject}&body=${body}`);
+  closeFeedbackModal();
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeFeedbackModal();
+});
+
+(function() {
+  function syncNavHeight() {
+    const h = document.querySelector(".site-header");
+    if (h) document.documentElement.style.setProperty("--nav-height", h.getBoundingClientRect().height + "px");
+  }
+  document.addEventListener("DOMContentLoaded", syncNavHeight);
+  window.addEventListener("resize", syncNavHeight);
+})();
+</script>
