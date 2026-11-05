@@ -7,3 +7,19 @@ vendor
 Gemfile.lock
 CLAUDE.md
 education-source
+# Local backup and test files
+/_includes/header.html.map-backup
+/_includes/metadata/works.json.vq-backup
+/bc001-full.krn
+/bin/__pycache__/build-melodic-index.cpython-314.pyc
+/create/scripts-local.html.backup
+/create/scripts-local.html.pdf-backup
+/debug-cadences.js
+/mb003-full.krn
+/mb004b-full.krn
+/test-bc001-modified.krn
+/test-bc001-original.krn
+/test-cadences.js
+/work/cadence-analysis.backup.txt
+/work/cadence-analysis.js.indent-backup
+bin/__pycache__/
