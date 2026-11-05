@@ -345,8 +345,14 @@ function extractMelodicSegments(kernText) {
 
     const spineIdx = melody.length ? melody[0].spineIdx : 0;
 
+    
     let current = [];
     let inside = false;
+
+    // Track poetic and refrain line types.
+    let activeLineType = null;
+    let segmentLineType = null;
+
 
     function finishSegment() {
         if (!inside || current.length === 0) {
@@ -358,21 +364,36 @@ function extractMelodicSegments(kernText) {
         const lastThree = current.slice(-3);
         const finalNote = current[current.length - 1];
 
+        
         segments.push({
             segment: segments.length + 1,
             measure: finalNote.measure,
+            lineType: segmentLineType,
             lastThreeMidi: lastThree.map(note => note.midi),
             finalMidi: finalNote.midi
         });
+
 
         current = [];
         inside = false;
     }
 
     for (let i = 0; i < lines.length; i++) {
+        
         const line = lines[i];
+        if (!line) continue;
 
-        if (!line || /^[!*=]/.test(line)) continue;
+        // Read poetic/refrain markers from any spine.
+        const lineMarker = line.match(
+            /(?:^|\t)\*(pline|rline):[^\t\s]*/
+        );
+
+        if (lineMarker) {
+            activeLineType = lineMarker[1];
+        }
+
+        if (/^[!*=]/.test(line)) continue;
+
 
         const fields = line.split('\t');
         const token = fields[spineIdx] || '';
@@ -381,6 +402,7 @@ function extractMelodicSegments(kernText) {
             if (inside) finishSegment();
             current = [];
             inside = true;
+			segmentLineType = activeLineType;
         }
 
         if (!inside) continue;

@@ -595,6 +595,7 @@ function renderCadencePanel(segments, cadences, kernText) {
     const keyLabel = tonicName + (key.isMinor ? " minor" : " major");
 
     let showDegrees = false;
+	let lineFilter = "all";
 
     function renderTable() {
         if (!segments || segments.length === 0) {
@@ -610,7 +611,15 @@ function renderCadencePanel(segments, cadences, kernText) {
             return;
         }
 
-        const rows = segments.map(function(segment) {
+        
+const filteredSegments = lineFilter === "all"
+    ? segments
+    : segments.filter(function(segment) {
+        return segment.lineType === lineFilter;
+    });
+
+const rows = filteredSegments.map(function(segment) {
+
             const pitches = segment.lastThreeMidi.map(
                 showDegrees ? degreeName : pitchName
             );
@@ -619,14 +628,41 @@ function renderCadencePanel(segments, cadences, kernText) {
                 ? degreeName(segment.finalMidi)
                 : pitchName(segment.finalMidi);
 
-            // Match existing classified cadences by ending measure.
-            const classification = (cadences || []).find(
-                c => c.measure === segment.measure
-            );
+         
+            // Classify cadence by the last two scale degrees.
+            const notes = segment.lastThreeMidi;
 
-            const type = classification
-                ? t("work.cadence_" + classification.type)
+            const penultimate = notes.length >= 2
+                ? notes[notes.length - 2]
+                : null;
+
+            const fromDegree = penultimate !== null
+                ? degreeName(penultimate)
+                : null;
+
+            const toDegree = degreeName(segment.finalMidi);
+
+            const movement = penultimate !== null
+                ? segment.finalMidi - penultimate
+                : 0;
+
+            const cadenceTypes = {
+                "3": { direction: -1, label: "Falling third" },
+                "2": { direction: -1, label: "Falling step" },
+                "5": { direction: -1, label: "Falling fifth" },
+                "7": { direction: 1, label: "Rising step" },
+                "6": { direction: 1, label: "Rising third" },
+                "4": { direction: 1, label: "Rising fourth" }
+            };
+
+            const match = cadenceTypes[fromDegree];
+
+            const type = toDegree === "1" &&
+                         match &&
+                         Math.sign(movement) === match.direction
+                ? `${fromDegree}–1 ${match.label}`
                 : "—";
+
 
             return `
                 <tr>
@@ -649,14 +685,65 @@ function renderCadencePanel(segments, cadences, kernText) {
                 Melodic Cadences
             </div>
 
-            <div class="cadence-controls">
-                <button type="button"
-                        id="cadence-notation-toggle">
-                    ${showDegrees
-                        ? "Show Pitch Names"
-                        : "Show Scale Degrees"}
-                </button>
-            </div>
+            
+<div class="cadence-controls"
+     style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+
+    <span style="font-weight:600;">Display notes:</span>
+
+    <button type="button"
+            class="cadence-notation-option"
+            data-notation="pitches"
+            aria-pressed="${!showDegrees}"
+            style="padding:8px 14px; border-radius:6px;
+                   border:2px solid #2b6cb0;
+                   background:${showDegrees ? '#fff' : '#2b6cb0'};
+                   color:${showDegrees ? '#222' : '#fff'};
+                   font-weight:600; cursor:pointer;">
+        Pitch Names
+    </button>
+
+    <button type="button"
+            class="cadence-notation-option"
+            data-notation="degrees"
+            aria-pressed="${showDegrees}"
+            style="padding:8px 14px; border-radius:6px;
+                   border:2px solid #2b6cb0;
+                   background:${showDegrees ? '#2b6cb0' : '#fff'};
+                   color:${showDegrees ? '#fff' : '#222'};
+                   font-weight:600; cursor:pointer;">
+        Scale Degrees
+    </button>
+
+</div>
+
+
+<div class="cadence-line-controls"
+     style="display:flex; align-items:center; gap:10px;
+            flex-wrap:wrap; margin:12px 0;">
+
+    <span style="font-weight:600;">Line Type:</span>
+
+    ${[
+        ["all", "All"],
+        ["pline", "Poetic"],
+        ["rline", "Refrain"]
+    ].map(([value, label]) => `
+        <button type="button"
+                class="cadence-line-option"
+                data-line-type="${value}"
+                aria-pressed="${lineFilter === value}"
+                style="padding:8px 14px;
+                       border:2px solid #2b6cb0;
+                       border-radius:6px;
+                       background:${lineFilter === value ? '#2b6cb0' : '#fff'};
+                       color:${lineFilter === value ? '#fff' : '#222'};
+                       font-weight:600;
+                       cursor:pointer;">
+            ${label}
+        </button>
+    `).join("")}
+</div>
 
             <div style="overflow-x:auto;">
                 <table class="cadence-table">
@@ -679,19 +766,33 @@ function renderCadencePanel(segments, cadences, kernText) {
 
         panel.classList.remove("hidden");
 
-        const toggle = panel.querySelector(
-            "#cadence-notation-toggle"
+        
+        const notationButtons = panel.querySelectorAll(
+            ".cadence-notation-option"
         );
 
-        if (toggle) {
-            toggle.addEventListener("click", function() {
-                showDegrees = !showDegrees;
+        notationButtons.forEach(function(button) {
+            button.addEventListener("click", function() {
+                showDegrees = button.dataset.notation === "degrees";
                 renderTable();
             });
-        }
+        });
+
     }
 
     renderTable();
+	
+const lineButtons = panel.querySelectorAll(
+    ".cadence-line-option"
+);
+
+lineButtons.forEach(function(button) {
+    button.addEventListener("click", function() {
+        lineFilter = button.dataset.lineType;
+        renderTable();
+    });
+});
+
 }
 
 
