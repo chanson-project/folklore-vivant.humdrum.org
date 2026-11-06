@@ -10,7 +10,7 @@
 
 @ navigation
 @nav.about: About
-@nav.chansons: Chansons
+@nav.chansons: Compilation
 @nav.performances: Performances
 @nav.musicians: Musicians
 @nav.resources: Resources
@@ -49,7 +49,7 @@
 @home.pages: Pages
 
 @ repertoire page
-@rep.heading: Chansons
+@rep.heading: Compilation
 @rep.search_placeholder: Search for a song or composer…
 @rep.melodic_placeholder: Hum a melody: G Bb G F# E …
 @rep.variants_hide: Do not show variants
@@ -376,7 +376,7 @@
 @home.pages: Pages
 
 @ page répertoire
-@rep.heading: Chansons
+@rep.heading: Compilation
 @rep.search_placeholder: Chercher une chanson ou un compositeur…
 @rep.melodic_placeholder: Fredonner une mélodie : G Bb G F# E …
 @rep.variants_hide: Ne pas afficher les variantes

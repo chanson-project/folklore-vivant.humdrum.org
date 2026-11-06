@@ -1,6 +1,6 @@
 ---
 layout: page
-title: chansons
+title: Compilation
 order: 3
 
 ---
