@@ -467,6 +467,41 @@ function createLookup(dataArray) {
 // displayWork --
 //
 
+// Find music spines and the first verse automatically.
+function getFirstVerseFilter(kern) {
+    const lines = kern.split(/\r?\n/);
+    const header = lines.find(line => line.startsWith("**"));
+
+    if (!header) return null;
+
+    const types = header.split("\t");
+    const verseLine = lines.find(line =>
+        line.split("\t").includes("*v:1")
+    );
+
+    if (!verseLine) return null;
+
+    const verses = verseLine.split("\t");
+    if (verses.length !== types.length) return null;
+
+    const keep = [];
+
+    for (let i = 0; i < types.length; i++) {
+        if (
+            types[i] === "**kern" ||
+            (types[i] === "**text" && verses[i] === "*v:1")
+        ) {
+            keep.push(i + 1);
+        }
+    }
+
+    if (!keep.some(i => types[i - 1] === "**kern")) {
+        return null;
+    }
+
+    return "extract -s " + keep.join(",");
+}
+
 function displayWork(id) {
 	console.error("========================================================");
 	console.error("ID=", id, "WORIID=", DATA1520.workid);
@@ -496,10 +531,6 @@ function displayWork(id) {
 		hnpOptions.filter.push(DATA1520.filter);
 	}
 
-// Test first-verse-only display for BC001.
-if (id.toLowerCase() === "bc001" && !TEXT_FILTER_ACTIVE) {
-    hnpOptions.filter.push("extract -s 1,2");
-}
 
 	if (window.localStorage.AccidentalState === "hide") {
 		hnpOptions.filter.push("shed -ke s/X?i/y/g");
@@ -549,6 +580,14 @@ if (id.toLowerCase() === "bc001" && !TEXT_FILTER_ACTIVE) {
 				};
 				const melodyParam = DATA1520.cgi.melody || "";
 				let displayKern = melodyParam ? markMelodicMatches(kern, melodyParam) : kern;
+
+				// Show only music and the first verse by default.
+				const firstVerseFilter = getFirstVerseFilter(kern);
+
+				if (firstVerseFilter && !TEXT_FILTER_ACTIVE) {
+                    hnpOptions.filter.push(firstVerseFilter);
+				}
+
 				if (CADENCE_FILTER_ACTIVE) {
     // Preserve existing cadence detection and score highlighting.
     const result = markCadences(displayKern);
