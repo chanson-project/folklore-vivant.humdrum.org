@@ -546,7 +546,7 @@ function displayScaleDegrees() {
 // displayCadences -- Toggle cadence analysis mode.
 //
 
-let CADENCE_FILTER_ACTIVE = false;
+let CADENCE_FILTER_ACTIVE = window.localStorage.getItem("CadenceFilterState") === "show";
 let LAST_CADENCE_LIST = [];
 
 function displayCadences() {

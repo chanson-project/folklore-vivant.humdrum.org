@@ -52,6 +52,16 @@ console.error("DATA1520", DATA1520);
 document.addEventListener("DOMContentLoaded", function (event) {
 	initializeAccidentalStateButton();
 
+        // Restore the cadence button state.
+        const cadenceBtn = document.querySelector(".show-cadences");
+        if (cadenceBtn) {
+                const key = CADENCE_FILTER_ACTIVE
+                        ? "work.hide_cadences"
+                        : "work.show_cadences";
+                cadenceBtn.setAttribute("data-i18n", key);
+                cadenceBtn.textContent = t(key);
+        }
+
 	// Create lookup tables for metadata:
 	DATA1520.lookup.works           = createLookup(DATA1520.metadata.works);
 	DATA1520.lookup.sources         = {};
