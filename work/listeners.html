@@ -495,6 +495,12 @@ function displayWork(id) {
 	if (DATA1520.filter) {
 		hnpOptions.filter.push(DATA1520.filter);
 	}
+
+// Test first-verse-only display for BC001.
+if (id.toLowerCase() === "bc001" && !TEXT_FILTER_ACTIVE) {
+    hnpOptions.filter.push("extract -s 1,2");
+}
+
 	if (window.localStorage.AccidentalState === "hide") {
 		hnpOptions.filter.push("shed -ke s/X?i/y/g");
 	}
