@@ -54,10 +54,25 @@ layout: work
 
     <div id="textSelect">
        <div class="button show-text"
-            onclick="displayText()"
-            data-i18n="work.show_text"
-            title="Show or hide the text"
-            aria-label="Show or hide the text">Show Text</div>
+        onclick="displayText()"
+        data-i18n="work.show_text"
+        title="Show or hide text analysis"
+        aria-label="Show or hide text analysis">Show Text Analysis</div>
+
+        <div class="button show-full-text"
+            onclick="toggleWorkFullText()"
+            title="Show or hide full lyrics"
+            aria-label="Show or hide full lyrics">Show Full Text</div>
+
+        <div class="button show-verses"
+             onclick="toggleWorkVerses()"
+             title="Show or hide verses"
+             aria-label="Show or hide verses">Show Verses</div>
+
+        <div class="button show-refrain"
+        onclick="toggleWorkRefrain()"
+        title="Show or hide refrain"
+        aria-label="Show or hide refrain">Show Refrain</div>
 
        <div class="button show-deg"
             onclick="displayScaleDegrees()"
@@ -74,6 +89,9 @@ layout: work
 </div>
 
 <div id="cadence-panel" class="hidden"></div>
+<div id="work-verses-panel" class="hidden"></div>
+<div id="work-refrain-panel" class="hidden"></div>
+<div id="work-full-text-panel" class="hidden"></div>
 
 <div class="PREHTML" style="display:none"></div>
 <div class="POSTHTML" style="display:none"></div>

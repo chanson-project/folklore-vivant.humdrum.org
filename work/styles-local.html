@@ -375,4 +375,121 @@ audio {
   font-weight: 600;
 }
 
+/* Chanson Page - Verses panel */
+
+#work-verses-panel:not(.hidden) {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 18px 24px;
+    max-width: 1100px;
+    margin: 16px auto 28px;
+    padding: 24px;
+    background: #fff9ee;
+    border: 1px solid #ead9bf;
+    border-radius: 14px;
+}
+
+#work-verses-panel h3 {
+    margin: 0;
+    padding-top: 3px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #b46b35;
+    text-transform: uppercase;
+}
+
+#work-verses-panel p {
+    margin: 0;
+    line-height: 1.8;
+    color: #3a3330;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+@media (max-width: 600px) {
+    #work-verses-panel:not(.hidden) {
+        grid-template-columns: 75px minmax(0, 1fr);
+        gap: 14px;
+        padding: 16px;
+    }
+}
+
+/* Chanson Page - Refrain panel */
+
+#work-refrain-panel:not(.hidden) {
+    display: block;
+    max-width: 1100px;
+    margin: 16px auto 28px;
+    padding: 24px;
+    background: #f0f7ed;
+    border: 1px solid #c5dfc1;
+    border-radius: 14px;
+}
+
+#work-refrain-panel h3 {
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1a6e3c;
+    text-transform: uppercase;
+}
+
+#work-refrain-panel p {
+    margin: 0;
+    line-height: 1.8;
+    color: #3a3330;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    #work-refrain-panel:not(.hidden) {
+        padding: 16px;
+    }
+}
+
+/* Chanson Page - Full Text panel */
+
+#work-full-text-panel:not(.hidden) {
+    max-width: 1100px;
+    margin: 16px auto 28px;
+    padding: 28px;
+    background: #fffdf8;
+    border: 1px solid #e5d9c8;
+    border-radius: 14px;
+}
+
+.full-text-section {
+    margin-bottom: 26px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee4d6;
+}
+
+.full-text-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.full-text-section h3 {
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #a66a3f;
+}
+
+.full-text-section p {
+    margin: 0;
+    line-height: 1.9;
+    color: #3a3330;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    #work-full-text-panel:not(.hidden) {
+        padding: 16px;
+    }
+}
+
 </style>

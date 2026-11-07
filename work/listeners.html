@@ -581,6 +581,12 @@ function displayWork(id) {
 				const melodyParam = DATA1520.cgi.melody || "";
 				let displayKern = melodyParam ? markMelodicMatches(kern, melodyParam) : kern;
 
+				// Store original lyrics and update the verses panel.
+				window.WORK_KERN_FOR_VERSES = kern;
+				renderWorkVerses();
+				renderWorkRefrain();
+				renderWorkFullText();
+
 				// Show only music and the first verse by default.
 				const firstVerseFilter = getFirstVerseFilter(kern);
 

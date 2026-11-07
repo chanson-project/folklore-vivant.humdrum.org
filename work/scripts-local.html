@@ -508,6 +508,345 @@ function displayAccidentals() {
 //     into div.POSTHTML.  Toggling OFF hides that div without re-rendering.
 //
 
+
+function extractSongSections(kern) {
+    const lines = kern.split(/\r?\n/);
+
+    const headerIndex = lines.findIndex(function(line) {
+        return line.startsWith('**kern');
+    });
+
+    if (headerIndex === -1) return [];
+
+    const headers = lines[headerIndex].split(/\t/);
+
+    const textIndexes = [];
+
+    headers.forEach(function(header, index) {
+        if (header === '**text') {
+            textIndexes.push(index);
+        }
+    });
+
+    if (textIndexes.length === 0) return [];
+
+    const sections = [];
+
+    // Current Humdrum section type.
+    let mode = 'verse';
+
+    // Each text spine gets its own verse number.
+    const verseNumbers = {};
+    textIndexes.forEach(function(textIndex, index) {
+        verseNumbers[textIndex] = index + 1;
+    });
+
+    // Buffers for the currently active section.
+    let verseBuffers = {};
+    let refrainBuffer = [];
+
+    function joinSyllables(syllables) {
+    return syllables
+        .join(' ')
+        .split(/\s*\n\s*/)
+        .map(line => line
+            .replace(/-\s+-?/g, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+        )
+        .filter(Boolean)
+        .join('\n');
+}
+
+    function flushVerse() {
+        textIndexes.forEach(function(textIndex) {
+            const syllables = verseBuffers[textIndex] || [];
+            const text = joinSyllables(syllables);
+
+            if (text) {
+                sections.push({
+                    type: 'verse',
+                    number: verseNumbers[textIndex],
+                    text: text
+                });
+            }
+        });
+
+        verseBuffers = {};
+    }
+
+    function flushRefrain() {
+        const text = joinSyllables(refrainBuffer);
+
+        if (text) {
+            sections.push({
+                type: 'refrain',
+                text: text
+            });
+        }
+
+        refrainBuffer = [];
+    }
+
+    function flushCurrentSection() {
+        if (mode === 'verse') {
+            flushVerse();
+        } else if (mode === 'refrain') {
+            flushRefrain();
+        }
+    }
+
+    for (let i = headerIndex + 1; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Humdrum explicitly changes to a refrain.
+        if (line.includes('*>Refrain')) {
+            flushCurrentSection();
+
+            mode = 'refrain';
+            refrainBuffer = [];
+            continue;
+        }
+
+        // Humdrum explicitly changes to a verse.
+        if (line.includes('*>Verse')) {
+            flushCurrentSection();
+
+            mode = 'verse';
+            verseBuffers = {};
+            continue;
+        }
+
+        if (line.startsWith('*-')) {
+            flushCurrentSection();
+            break;
+        }
+
+		// Detect original poetic line boundaries.
+        if (mode === 'verse' && line.startsWith('*')) {
+               const fields = line.split(/\t/);
+
+              textIndexes.forEach(function(textIndex) {
+                  const marker = fields[textIndex] || '';
+
+               if (marker.startsWith('*pline:')) {
+                if (!verseBuffers[textIndex]) {
+                    verseBuffers[textIndex] = [];
+                }
+
+                verseBuffers[textIndex].push('\n');
+        }
+    });
+}
+
+		// Detect original refrain line boundaries.
+		if (mode === 'refrain' && line.startsWith('*')) {
+			const fields = line.split(/\t/);
+			const marker = fields[textIndexes[0]] || '';
+
+			if (/^\*pline:R\d+/i.test(marker)) {
+				refrainBuffer.push('\n');
+			}
+		}
+
+        // Ignore interpretations, comments and barlines.
+        if (
+            line.startsWith('*') ||
+            line.startsWith('!') ||
+            line.startsWith('=')
+        ) {
+            continue;
+        }
+
+        const fields = line.split(/\t/);
+
+        if (mode === 'refrain') {
+            // Refrain text is carried by the first text spine.
+            const token = fields[textIndexes[0]];
+
+            if (token && token !== '.') {
+                refrainBuffer.push(token);
+            }
+
+        } else if (mode === 'verse') {
+
+            textIndexes.forEach(function(textIndex) {
+                const token = fields[textIndex];
+
+                if (token && token !== '.') {
+                    if (!verseBuffers[textIndex]) {
+                        verseBuffers[textIndex] = [];
+                    }
+
+                    verseBuffers[textIndex].push(token);
+                }
+            });
+        }
+    }
+
+    // Some files may end without *-.
+    flushCurrentSection();
+
+    return sections;
+}
+
+// Show or hide verses on the Chanson Page.
+let WORK_VERSES_VISIBLE = false;
+window.WORK_KERN_FOR_VERSES = "";
+
+function toggleWorkVerses() {
+    WORK_VERSES_VISIBLE = !WORK_VERSES_VISIBLE;
+    renderWorkVerses();
+}
+
+function renderWorkVerses() {
+    const panel = document.getElementById("work-verses-panel");
+    const button = document.querySelector(".show-verses");
+
+    if (!panel) return;
+
+    if (button) {
+        button.textContent = WORK_VERSES_VISIBLE
+            ? "Hide Verses"
+            : "Show Verses";
+    }
+
+    panel.classList.toggle("hidden", !WORK_VERSES_VISIBLE);
+
+    if (!WORK_VERSES_VISIBLE) return;
+
+    panel.replaceChildren();
+
+    const sections = window.WORK_KERN_FOR_VERSES
+        ? extractSongSections(window.WORK_KERN_FOR_VERSES)
+        : [];
+
+    const verses = sections.filter(section => section.type === "verse");
+
+    if (verses.length === 0) {
+        panel.textContent = "No verses available.";
+        return;
+    }
+
+    verses.forEach(function(verse) {
+        const heading = document.createElement("h3");
+        heading.textContent = "Verse " + verse.number;
+
+        const text = document.createElement("p");
+        text.textContent = verse.text;
+
+        panel.append(heading, text);
+    });
+}
+
+// Show or hide the refrain on the Chanson Page.
+let WORK_REFRAIN_VISIBLE = false;
+
+function toggleWorkRefrain() {
+    WORK_REFRAIN_VISIBLE = !WORK_REFRAIN_VISIBLE;
+    renderWorkRefrain();
+}
+
+function renderWorkRefrain() {
+    const panel = document.getElementById("work-refrain-panel");
+    const button = document.querySelector(".show-refrain");
+
+    if (!panel) return;
+
+    if (button) {
+        button.textContent = WORK_REFRAIN_VISIBLE
+            ? "Hide Refrain"
+            : "Show Refrain";
+    }
+
+    panel.classList.toggle("hidden", !WORK_REFRAIN_VISIBLE);
+
+    if (!WORK_REFRAIN_VISIBLE) return;
+
+    panel.replaceChildren();
+
+    const sections = window.WORK_KERN_FOR_VERSES
+        ? extractSongSections(window.WORK_KERN_FOR_VERSES)
+        : [];
+
+    const refrains = sections.filter(
+        section => section.type === "refrain"
+    );
+
+    if (refrains.length === 0) {
+        panel.textContent = "No refrain available.";
+        return;
+    }
+
+    refrains.forEach(function(refrain) {
+        const heading = document.createElement("h3");
+        heading.textContent = "Refrain";
+
+        const text = document.createElement("p");
+        text.textContent = refrain.text;
+
+        panel.append(heading, text);
+    });
+}
+
+// Show or hide the full lyrics on the Chanson Page.
+let WORK_FULL_TEXT_VISIBLE = window.localStorage.getItem("WorkFullTextState") === "show";
+
+function toggleWorkFullText() {
+    WORK_FULL_TEXT_VISIBLE = !WORK_FULL_TEXT_VISIBLE;
+
+    window.localStorage.setItem(
+        "WorkFullTextState",
+        WORK_FULL_TEXT_VISIBLE ? "show" : "hide"
+    );
+
+    renderWorkFullText();
+}
+
+function renderWorkFullText() {
+    const panel = document.getElementById("work-full-text-panel");
+    const button = document.querySelector(".show-full-text");
+
+    if (!panel) return;
+
+    if (button) {
+        button.textContent = WORK_FULL_TEXT_VISIBLE
+            ? "Hide Full Text"
+            : "Show Full Text";
+    }
+
+    panel.classList.toggle("hidden", !WORK_FULL_TEXT_VISIBLE);
+
+    if (!WORK_FULL_TEXT_VISIBLE) return;
+
+    panel.replaceChildren();
+
+    const sections = window.WORK_KERN_FOR_VERSES
+        ? extractSongSections(window.WORK_KERN_FOR_VERSES)
+        : [];
+
+    if (sections.length === 0) {
+        panel.textContent = "No full text available.";
+        return;
+    }
+
+    sections.forEach(function(section) {
+        const block = document.createElement("div");
+        block.className = "full-text-section";
+
+        const heading = document.createElement("h3");
+        heading.textContent = section.type === "refrain"
+            ? "Refrain"
+            : "Verse " + section.number;
+
+        const text = document.createElement("p");
+        text.textContent = section.text;
+
+        block.append(heading, text);
+        panel.appendChild(block);
+    });
+}
+
 let TEXT_FILTER_ACTIVE = false;
 
 function displayText() {

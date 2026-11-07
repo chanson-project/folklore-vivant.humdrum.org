@@ -121,8 +121,8 @@
 @work.humdrum_file: Humdrum (.krn)
 @work.hide_accidentals: Hide Editorial Accidentals
 @work.show_accidentals: Show Editorial Accidentals
-@work.show_text: Show Text
-@work.hide_text: Hide Text
+@work.show_text: Show Text Analysis
+@work.hide_text: Hide Text Analysis
 @work.show_deg: Show Scale Degrees
 @work.hide_deg: Hide Scale Degrees
 @work.show_cadences: Show Cadences
@@ -448,8 +448,8 @@
 @work.humdrum_file: Humdrum (.krn)
 @work.hide_accidentals: Masquer les accidents éditoriaux
 @work.show_accidentals: Afficher les accidents éditoriaux
-@work.show_text: Afficher le texte
-@work.hide_text: Masquer le texte
+@work.show_text: Afficher l'analyse du texte
+@work.hide_text: Masquer l'analyse du texte
 @work.show_deg: Afficher les degrés
 @work.hide_deg: Masquer les degrés
 @work.show_cadences: Voir les cadences
