@@ -60,6 +60,9 @@ fields:
     performers: "Performers"
     rec_date:   "Date"
     rec_place:  "Place"
+    recording_date: "!!!MRD"
+    performer_name: "!!!MPN"
+    publication_date: "!!!PDT"
   sources:
     id:        "!!!id"
     title:     "!!!PTL"

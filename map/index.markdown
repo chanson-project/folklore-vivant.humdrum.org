@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Explore Map
+title: Explore
 permalink: /map/
 ---
 
@@ -31,8 +31,8 @@ permalink: /map/
   <p id="song-map-summary" class="song-map-summary" role="status" aria-live="polite">Loading song locations…</p>
   <div id="canada-song-map" role="region" aria-label="Interactive map of Canada with song location markers"></div>
 
-  <p class="song-map-note" data-lang="en">Pins indicate the place named in a song's <code>!!!ARE</code> metadata, not necessarily where the song was composed. Only locations that have been manually matched to verified coordinates are shown; incomplete or ambiguous records are omitted.</p>
-  <p class="song-map-note" data-lang="fr">Les repères indiquent le lieu inscrit dans le champ <code>!!!ARE</code>, et non nécessairement le lieu de composition. Seuls les lieux associés manuellement à des coordonnées vérifiées sont affichés; les données incomplètes ou ambiguës sont omises.</p>
+  <p class="song-map-note" data-lang="en">Pins mark approximate localities, not recording addresses. Pins indicate the place named in a song's <code>!!!ARE</code> metadata, not necessarily where the song was composed. Only locations that have been manually matched to verified coordinates are shown; incomplete or ambiguous records are omitted.</p>
+  <p class="song-map-note" data-lang="fr">Les repères désignent des localités approximatives, et non des adresses d’enregistrement. Les repères indiquent le lieu inscrit dans le champ <code>!!!ARE</code>, et non nécessairement le lieu de composition. Seuls les lieux associés manuellement à des coordonnées vérifiées sont affichés; les données incomplètes ou ambiguës sont omises.</p>
 </section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
