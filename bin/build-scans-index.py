@@ -23,9 +23,10 @@ RAW     = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}"
 API     = f"https://api.github.com/repos/{REPO}/contents"
 
 COLLECTIONS = [
-    ("bc100", "BC"),
-    ("eg104", "EG"),
-    ("mb157", "MB"),
+    ("bc", "BC"),
+    ("eg", "EG"),
+    ("mb", "MB"),
+    ("vq", "VQ"),
 ]
 
 OUT = "_includes/metadata/scans.json"

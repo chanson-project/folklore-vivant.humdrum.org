@@ -338,12 +338,12 @@ function displayWorkInfo(id) {
 		encodersoutput = `<div class="work-item"><b>${label}:</b> ${encoderList.join(", ")}</div>`;
 	}
 
-	const scanURL = (DATA1520.metadata.scans || {})[id] || "";
+	const scanURL = (DATA1520.metadata.scans || {})[id.toUpperCase()] || "";
 
 	let linksoutput = "";
 	if (rawURL) {
 		const vhvURL = `https://verovio.humdrum.org/?k=e&file=${encodeURIComponent(rawURL)}`;
-		const scanLink = scanURL ? ` | <a target="_blank" rel="noopener noreferrer" href="${scanURL}">${t('work.view_pdf')}</a>` : "";
+		const scanLink = scanURL ? ` | <a target="_blank" rel="noopener noreferrer" href="${scanURL}">PDF</a>` : "";
 		linksoutput = `<div class="work-item"><b>${t('work.view_on')}:</b> <a target="_blank" href="${vhvURL}">VHV</a> | <a target="_blank" href="${githubURL}">GitHub</a>${scanLink}</div>`;
 	}
 
