@@ -242,6 +242,7 @@ function createMakeScoreSource(phraseKern, kind, textColumn) {
   return `!!!filter: extract -s 1,${textColumn + 1}\n` + phraseKern;
 }
 
+// CREATE_VERSE_REPAINT_FIX_V2: refresh the score without destroying the last good rendering.
 function createUpdateVerse(root, selectedColumn) {
   root.querySelectorAll('.create-line-block').forEach(block => {
     const segment = block._createSegment;
@@ -251,15 +252,64 @@ function createUpdateVerse(root, selectedColumn) {
     const original = block.querySelector('.create-original-lyrics');
     if (original) original.textContent = createPrettyLyrics(tokens);
     createBuildSyllableInputs(block, tokens);
-    const originalScore = block.querySelector('.create-score-version[data-score="original"]');
-    if (!originalScore) return;
-    const source = originalScore.querySelector('script[type="text/x-humdrum"]');
-    if (!source) return;
+
+    const oldScore = block.querySelector('.create-score-version[data-score="original"]');
+    if (!oldScore) return;
+    const oldSource = oldScore.querySelector('script[type="text/x-humdrum"]');
+    if (!oldSource || typeof displayHumdrum !== 'function') return;
+
+    // A fresh source/script node is needed: the renderer may not re-render
+    // after only changing the text of an already-processed Humdrum script.
+    const fresh = document.createElement('div');
+    fresh.className = 'create-score-version';
+    fresh.dataset.score = 'original';
+    const source = document.createElement('script');
+    source.type = 'text/x-humdrum';
+    source.id = oldSource.id + '-verse-' + selectedColumn + '-' + Date.now();
     source.textContent = createMakeScoreSource(kern, 'original', selectedColumn);
-    originalScore.querySelectorAll('svg').forEach(svg => svg.remove());
-    if (typeof displayHumdrum === 'function') {
+    fresh.appendChild(source);
+    oldScore.parentNode.insertBefore(fresh, oldScore);
+
+    // Show the previous successful score until new rendering has completed.
+    fresh.style.cssText = 'position:absolute;left:-10000px;visibility:hidden;';
+    let finalized = false;
+    const finish = () => {
+      if (finalized) return;
+      const newSvg = fresh.querySelector('svg');
+      if (newSvg) {
+        finalized = true;
+        fresh.style.cssText = '';
+        oldScore.remove();
+        block.classList.remove('create-verse-fallback');
+        return;
+      }
+    };
+    try {
       displayHumdrum({source: source.id});
+      finish();
+    } catch (error) {
+      console.warn('Verse score rendering failed:', error);
     }
+    setTimeout(() => {
+      finish();
+      if (finalized) return;
+      // If this verse cannot be rendered, keep an existing music score visible
+      // and display the selected verse as normal text instead of an empty panel.
+      const melodySvg = block.querySelector('.create-score-version[data-score="melody"] svg');
+      if (melodySvg) {
+        const clone = melodySvg.cloneNode(true);
+        fresh.replaceChildren(clone);
+        fresh.style.cssText = '';
+        oldScore.remove();
+        block.classList.add('create-verse-fallback');
+      } else {
+        fresh.remove();
+        oldScore.style.display = '';
+        block.classList.add('create-verse-fallback');
+      }
+      finalized = true;
+      console.warn('Selected verse could not be engraved; showing melody and verse text as a fallback.');
+    }, 1200);
   });
 }
 

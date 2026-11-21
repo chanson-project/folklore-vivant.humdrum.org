@@ -416,8 +416,11 @@ main.page-content {
 .create-count-match { color: #28764c; font-weight: 700; }
 .create-editor[data-view="music"] .create-syllable-fields,
 .create-editor[data-view="music"] .create-syllable-count,
-.create-editor[data-view="music"] .create-input-line,
 .create-editor[data-view="text"] .create-syllable-fields,
 .create-editor[data-view="both"] .create-input-line { display: none; }
 
+/* Fallback for unsupported verse-specific score rendering. */
+.create-editor[data-view="both"] .create-line-block.create-verse-fallback .create-original-lyrics {
+  display: block;
+}
 </style>
