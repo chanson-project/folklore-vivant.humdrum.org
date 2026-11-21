@@ -402,4 +402,22 @@ main.page-content {
   display: none;
 }
 
+
+/* CREATE_FOUR_FEATURES_V1 */
+.create-verse-toolbar { display: flex; justify-content: center; margin: 12px auto 20px; }
+.create-verse-toolbar label { font-weight: 700; }
+.create-verse-select { margin-left: 10px; border: 2px solid #dfcfb0; border-radius: 12px; padding: 9px 14px; background: #fffdf8; font: inherit; }
+.create-syllable-fields { display: flex; gap: 5px; flex-wrap: wrap; align-items: flex-start; margin: 12px 0; }
+.create-syllable-cell { flex: 1 1 48px; min-width: 44px; max-width: 90px; }
+.create-syllable-input { box-sizing: border-box; width: 100%; min-width: 0; padding: 8px 4px; border: 1px solid #c9b998; border-radius: 6px; font-size: 13px; text-align: center; background: #fffdf8; }
+.create-syllable-input:focus { outline: 2px solid #df913c; }
+.create-syllable-count { margin-top: 8px; font-size: 13px; color: #655b47; }
+.create-count-over { color: #ac3434; font-weight: 700; }
+.create-count-match { color: #28764c; font-weight: 700; }
+.create-editor[data-view="music"] .create-syllable-fields,
+.create-editor[data-view="music"] .create-syllable-count,
+.create-editor[data-view="music"] .create-input-line,
+.create-editor[data-view="text"] .create-syllable-fields,
+.create-editor[data-view="both"] .create-input-line { display: none; }
+
 </style>

@@ -155,6 +155,114 @@ function buildMiniKern(headerLines, segmentText) {
   ].join('\n');
 }
 
+
+// CREATE_FOUR_FEATURES_V1: verse selection and child-friendly lyric editing.
+function createTextSpineIndices(kern) {
+  const header = kern.split(/\r?\n/).find(row => row.startsWith('**'));
+  if (!header) return [];
+  return header.split('\t').flatMap((name, index) => name === '**text' ? [index] : []);
+}
+
+// A syllable unit is separated by whitespace or a hyphen. This is an estimate,
+// not a French linguistic syllabifier (silent letters and elision are special).
+function createSyllableUnits(text) {
+  return String(text || '').trim().split(/[\s-]+/).filter(Boolean);
+}
+
+function createVerseTokens(segment, textColumn) {
+  if (textColumn == null || textColumn < 0) return [];
+  return segment.split(/\r?\n/).flatMap(row => {
+    if (!row || /^[!*=@]/.test(row)) return [];
+    const token = row.split('\t')[textColumn];
+    return token && token !== '.' && !token.startsWith('!') ? [token] : [];
+  });
+}
+
+function createPrettyLyrics(tokens) {
+  return tokens.join(' ').replace(/-\s+/g, '-').replace(/\s+([,.;!?])/g, '$1');
+}
+
+function createUpdateCounter(block) {
+  const textInput = block.querySelector('.create-line-input');
+  const count = block.querySelector('.create-syllable-count');
+  if (!textInput || !count) return;
+  const expected = Number(block.dataset.syllableTarget || 0);
+  const actual = createSyllableUnits(textInput.value).length;
+  count.textContent = `${actual} / ${expected} syllables`;
+  count.classList.toggle('create-count-over', actual > expected);
+  count.classList.toggle('create-count-match', actual === expected && expected > 0);
+  count.setAttribute('aria-label', `${actual} of ${expected} expected syllables`);
+}
+
+function createBuildSyllableInputs(block, tokens) {
+  const wrap = block.querySelector('.create-syllable-fields');
+  const textInput = block.querySelector('.create-line-input');
+  if (!wrap || !textInput) return;
+  wrap.replaceChildren();
+  const slots = tokens.length;
+  block.dataset.syllableTarget = String(slots);
+  // Keep existing text on verse switch; avoid silently deleting child edits.
+  const draft = createSyllableUnits(textInput.value);
+  for (let n = 0; n < slots; n++) {
+    const cell = document.createElement('label');
+    cell.className = 'create-syllable-cell';
+    const field = document.createElement('input');
+    field.type = 'text';
+    field.className = 'create-syllable-input';
+    field.maxLength = 64;
+    field.autocomplete = 'off';
+    field.setAttribute('aria-label', `Syllable ${n + 1}`);
+    field.placeholder = String(n + 1);
+    field.value = draft[n] || '';
+    field.addEventListener('input', () => {
+      // Existing PDF export reads .create-line-input; preserve its interface.
+      const values = [...wrap.querySelectorAll('.create-syllable-input')].map(el => el.value.trim());
+      // Preserve the position of blanks when there are later filled boxes.
+      const lastFilled = values.reduce((last, item, i) => item ? i : last, -1);
+      textInput.value = values.slice(0, lastFilled + 1).map(v => v || '.').join(' ');
+      createUpdateCounter(block);
+    });
+    cell.appendChild(field);
+    wrap.appendChild(cell);
+  }
+  textInput.addEventListener('input', () => {
+    const values = createSyllableUnits(textInput.value);
+    wrap.querySelectorAll('.create-syllable-input').forEach((field, i) => {
+      field.value = values[i] || '';
+    });
+    createUpdateCounter(block);
+  });
+  createUpdateCounter(block);
+}
+
+function createMakeScoreSource(phraseKern, kind, textColumn) {
+  if (kind === 'melody') return '!!!filter: extract -s 1\n' + phraseKern;
+  if (textColumn == null) return '!!!filter: extract -s 1\n' + phraseKern;
+  // Humdrum extract is one-based. Keep the melody and one selected text spine.
+  return `!!!filter: extract -s 1,${textColumn + 1}\n` + phraseKern;
+}
+
+function createUpdateVerse(root, selectedColumn) {
+  root.querySelectorAll('.create-line-block').forEach(block => {
+    const segment = block._createSegment;
+    const kern = block.dataset.originalKern;
+    if (!segment || !kern) return;
+    const tokens = createVerseTokens(segment, selectedColumn);
+    const original = block.querySelector('.create-original-lyrics');
+    if (original) original.textContent = createPrettyLyrics(tokens);
+    createBuildSyllableInputs(block, tokens);
+    const originalScore = block.querySelector('.create-score-version[data-score="original"]');
+    if (!originalScore) return;
+    const source = originalScore.querySelector('script[type="text/x-humdrum"]');
+    if (!source) return;
+    source.textContent = createMakeScoreSource(kern, 'original', selectedColumn);
+    originalScore.querySelectorAll('svg').forEach(svg => svg.remove());
+    if (typeof displayHumdrum === 'function') {
+      displayHumdrum({source: source.id});
+    }
+  });
+}
+
 let CREATE_TEMPO = 120;
 
 function setCreateTempo(value, activeScale = null) {
@@ -462,6 +570,35 @@ setCreateTempo(tempoInput ? tempoInput.value : 120);
       // Clear "Loading song..."
       linesEl.innerHTML = '';
 
+      const verseColumns = createTextSpineIndices(kern);
+      let selectedVerseColumn = verseColumns.length ? verseColumns[0] : null;
+      const verseToolbar = document.createElement('div');
+      verseToolbar.className = 'create-verse-toolbar';
+      const verseLabel = document.createElement('label');
+      verseLabel.textContent = 'Lyrics: ';
+      const verseSelect = document.createElement('select');
+      verseSelect.className = 'create-verse-select';
+      verseSelect.setAttribute('aria-label', 'Choose verse');
+      verseColumns.forEach((column, number) => {
+        const option = document.createElement('option');
+        option.value = String(column);
+        option.textContent = 'Verse ' + (number + 1);
+        verseSelect.appendChild(option);
+      });
+      if (!verseColumns.length) {
+        const option = document.createElement('option');
+        option.textContent = 'No lyrics available';
+        verseSelect.appendChild(option);
+        verseSelect.disabled = true;
+      }
+      verseLabel.appendChild(verseSelect);
+      verseToolbar.appendChild(verseLabel);
+      linesEl.before(verseToolbar);
+      verseSelect.addEventListener('change', () => {
+        selectedVerseColumn = Number(verseSelect.value);
+        createUpdateVerse(linesEl, selectedVerseColumn);
+      });
+
 
       // ---------------------------------------
       // Create one editor block for each phrase
@@ -478,6 +615,7 @@ setCreateTempo(tempoInput ? tempoInput.value : 120);
         lineBlock.className =
           'create-line-block';
 lineBlock.dataset.line = index;
+        lineBlock._createSegment = segment;
 
         // Phrase heading
         const header =
@@ -576,6 +714,17 @@ lineBlock.dataset.line = index;
         lineBlock.appendChild(originalLyrics);
         lineBlock.appendChild(inputWrap);
 
+        const syllableFields = document.createElement('div');
+        syllableFields.className = 'create-syllable-fields';
+        syllableFields.setAttribute('aria-label', 'Editable syllables under the music');
+        lineBlock.appendChild(syllableFields);
+
+        const syllableCount = document.createElement('div');
+        syllableCount.className = 'create-syllable-count';
+        syllableCount.setAttribute('role', 'status');
+        syllableCount.setAttribute('aria-live', 'polite');
+        lineBlock.appendChild(syllableCount);
+
 
         linesEl.appendChild(
           lineBlock
@@ -605,8 +754,7 @@ lineBlock.dataset.line = index;
 );
 
 if (originalLyricsBox) {
-  originalLyricsBox.textContent =
-    extractPhraseLyrics(segment, kern);
+  originalLyricsBox.textContent = createPrettyLyrics(createVerseTokens(segment, selectedVerseColumn));
 }
 
         if (!musicBox) {
@@ -680,6 +828,7 @@ const phraseBlock = document.querySelector(
 
 if (phraseBlock) {
   phraseBlock.dataset.originalKern = miniKern;
+  createBuildSyllableInputs(phraseBlock, createVerseTokens(segment, selectedVerseColumn));
 }
 
 
@@ -702,7 +851,7 @@ const scoreVersions = [
   },
   {
     name: 'original',
-    kern: miniKern
+    kern: createMakeScoreSource(miniKern, 'original', selectedVerseColumn)
   }
 ];
 
@@ -1124,8 +1273,9 @@ function replacePhraseLyrics(originalKern, newLyrics) {
           );
 
         } else {
+          const selectedScore = block.querySelector('.create-score-version[data-score="original"]');
           const originalSvg = [
-    ...block.querySelectorAll('.create-line-music svg')
+    ...(selectedScore ? selectedScore.querySelectorAll('svg') : [])
           ].find(svg =>
     svg.querySelector('defs') &&
     svg.querySelector('style') &&
