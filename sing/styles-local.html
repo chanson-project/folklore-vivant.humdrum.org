@@ -484,4 +484,41 @@
   text-decoration: none;
 }
 
+
+/* SING_FAVORITES_V1: browser-local favorites */
+.sing-favorite-star {
+  position: absolute;
+  top: 7px;
+  right: 9px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(100, 75, 30, .20);
+  border-radius: 50%;
+  background: rgba(255,255,255,.83);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #84796d;
+  padding: 0;
+}
+.sing-favorite-star.is-favorite { color: #e49b1a; background: #fff6d7; }
+.sing-favorite-star:hover { transform: scale(1.12); background: white; }
+.sing-favorite-star:focus-visible { outline: 3px solid #a86c12; outline-offset: 2px; }
+.sing-favorites-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 8px; }
+.sing-favorites-filter {
+  padding: 7px 14px;
+  border: 1.5px solid #e8cda0;
+  border-radius: 999px;
+  background: #fffdfa;
+  color: #745c3d;
+  font: 700 13px 'Fredoka','Nunito',sans-serif;
+  cursor: pointer;
+}
+.sing-favorites-filter.active { background: #ffdfa4; border-color: #eaa24c; color: #784508; }
+.sing-favorites-filter:focus-visible { outline: 3px solid #a86c12; outline-offset: 2px; }
+
 </style>

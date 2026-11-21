@@ -33,6 +33,75 @@ let CURRENT_IDX     = 0;
 let FILTERED_WORKS  = SING_WORKS.slice();
 let DEFAULT_TEMPO   = 120;
 
+
+// SING_FAVORITES_V1: No-account, browser-local song favorites.
+const SING_FAVORITES_KEY = 'folkVivant.songFavorites.v1';
+let SING_FAVORITES_ONLY = false;
+let SING_FAVORITES = new Set();
+
+try {
+  const saved = JSON.parse(window.localStorage.getItem(SING_FAVORITES_KEY) || '[]');
+  if (Array.isArray(saved)) {
+    SING_FAVORITES = new Set(saved.filter(id => typeof id === 'string'));
+  }
+} catch (error) {
+  console.warn('Favorites could not be read:', error);
+}
+
+function saveSingFavorites() {
+  try {
+    window.localStorage.setItem(SING_FAVORITES_KEY, JSON.stringify([...SING_FAVORITES]));
+  } catch (error) {
+    console.warn('Favorites could not be saved:', error);
+  }
+}
+
+function toggleSingFavorite(id) {
+  if (SING_FAVORITES.has(id)) SING_FAVORITES.delete(id);
+  else SING_FAVORITES.add(id);
+  saveSingFavorites();
+  filterSongs(); // Preserve the current search query and favorites filter.
+}
+
+function setSingFavoritesOnly(only) {
+  SING_FAVORITES_ONLY = !!only;
+  updateSingFavoriteToolbar();
+  filterSongs();
+}
+
+function updateSingFavoriteToolbar() {
+  const all = document.getElementById('sing-show-all');
+  const favorites = document.getElementById('sing-show-favorites');
+  const number = document.getElementById('sing-favorites-number');
+  if (all) {
+    all.classList.toggle('active', !SING_FAVORITES_ONLY);
+    all.setAttribute('aria-pressed', String(!SING_FAVORITES_ONLY));
+  }
+  if (favorites) {
+    favorites.classList.toggle('active', SING_FAVORITES_ONLY);
+    favorites.setAttribute('aria-pressed', String(SING_FAVORITES_ONLY));
+  }
+  if (number) number.textContent = String(SING_FAVORITES.size);
+}
+
+function initSingFavoriteToolbar() {
+  if (document.getElementById('sing-favorites-toolbar')) return;
+  const count = document.getElementById('sing-count');
+  if (!count || !count.parentNode) return;
+  const toolbar = document.createElement('div');
+  toolbar.id = 'sing-favorites-toolbar';
+  toolbar.className = 'sing-favorites-toolbar';
+  toolbar.innerHTML = `
+    <button type="button" id="sing-show-all" class="sing-favorites-filter active"
+      aria-pressed="true">All songs</button>
+    <button type="button" id="sing-show-favorites" class="sing-favorites-filter"
+      aria-pressed="false">★ Favorites (<span id="sing-favorites-number">0</span>)</button>`;
+  count.parentNode.insertBefore(toolbar, count);
+  document.getElementById('sing-show-all').addEventListener('click', () => setSingFavoritesOnly(false));
+  document.getElementById('sing-show-favorites').addEventListener('click', () => setSingFavoritesOnly(true));
+  updateSingFavoriteToolbar();
+}
+
 const YT_ICON_SVG = `<svg class="yt-icon-svg" width="26" height="18" viewBox="0 0 90 63" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="63" rx="13" fill="#FF0000"/><polygon points="37,15 37,48 64,31" fill="white"/></svg>`;
 
 // ── Grid ──────────────────────────────────────────────────────────────────────
@@ -67,6 +136,13 @@ function buildSingGrid(works) {
           title="Go to score / notation musicale"
           onclick="event.stopPropagation()">${id}</a>
 
+        <button type="button" class="sing-favorite-star ${SING_FAVORITES.has(id) ? 'is-favorite' : ''}"
+          data-song-id="${encodeURIComponent(id)}"
+          aria-label="${SING_FAVORITES.has(id) ? 'Remove from favorites' : 'Add to favorites'}"
+          aria-pressed="${SING_FAVORITES.has(id)}"
+          title="${SING_FAVORITES.has(id) ? 'Remove from favorites' : 'Add to favorites'}"
+          onclick="event.stopPropagation(); toggleSingFavorite(decodeURIComponent(this.dataset.songId))"
+          onkeydown="event.stopPropagation()">${SING_FAVORITES.has(id) ? '★' : '☆'}</button>
         <div class="sing-card-emoji">${emoji}</div>
         <div class="sing-card-title" style="color:${col.text}">${title}</div>
         ${comp ? `<div class="sing-card-comp">${comp}</div>` : ''}
@@ -83,7 +159,13 @@ function filterSongs() {
                (w[FIELD.composer] || '').toLowerCase().includes(q);
       })
     : SING_WORKS.slice();
+  if (SING_FAVORITES_ONLY) {
+    FILTERED_WORKS = FILTERED_WORKS.filter(function(w) {
+      return SING_FAVORITES.has((w[FIELD.id] || '').trim());
+    });
+  }
   buildSingGrid(FILTERED_WORKS);
+  updateSingFavoriteToolbar();
 }
 
 function pickRandom() {
@@ -427,6 +509,7 @@ function extractLyrics(kernText) {
   return words;
 }
 
+
 function extractSongSections(kern) {
     const lines = kern.split(/\r?\n/);
 
@@ -626,7 +709,8 @@ function openSongFromHash() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  buildSingGrid(SING_WORKS);
+  initSingFavoriteToolbar();
+  filterSongs();
   openSongFromHash();
 });
 
