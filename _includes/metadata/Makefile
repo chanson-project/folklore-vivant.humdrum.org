@@ -6,7 +6,7 @@
 ## Filename:      _includes/metadata/Makefile
 ## vim:           ts=3:nowrap
 ##
-## Description: Download metadata for the 1520s project from the Google Spreadsheet
+## Description: Download metadata for the Chanson project from the Google Spreadsheet
 ##              for the project's metadata.  You need to update the SID variable below
 ##              when the deployment of the Google Apps Script has changed.
 ##
@@ -17,7 +17,7 @@
 ##
 
 
-#SID for 1520s Project Metadata
+#SID for Chanson Project Metadata
 SID = AKfycbwGO6_cglQQ9cEbrk38h7U5ovmj_Se6v9IwQohdrvh8fvYSgiPYBJqoVRwUZ4JL53Kl
 
 all: download
