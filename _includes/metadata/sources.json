@@ -41,7 +41,11 @@
 		"!!!id": "erc",
 		"!!!PTL": "The Ermatinger Collection of Voyageur Songs (ca. 1830)",
 		"!!!PTL-series": "Journal of American Folklore",
-		"!!!PED": "Barbeau, Marius"
+		"!!!PDT": "1954",
+		"!!!PPR": "The Journal of American Folklore",
+		"!!!PPP": "University iof Illinois Press; American Folklore Society",
+		"!!!PED": "Barbeau, Marius",
+		"Other": "Stable URL: https://www.jstor.org/stable/536221"
 	},
 	{
 		"!!!id": "pei",
@@ -52,6 +56,6 @@
 		"!!!PPP": "Ottawa",
 		"!!!PED": "Arsenault",
 		"!!!YEM": "Tous droits de traduction et d'adaptation, en totalité ou en partie, réservés pour tous les pays. La reproduction d'un extrait Quelconque de ce livre, par quelque procédé que ce soit, tant électronique que mécanique, en particulier par photocopie et par microfilm, est interdite sans l'autorisation écrite de l'auteur et de l'éditeur.",
-		"!!!SMA": "Bibliothèque nationale du Québec, 3e trimestre 1980"
+		"!!!SMA": "JSTOR"
 	}
 ]
