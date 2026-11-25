@@ -30,4 +30,9 @@ works:
 sources:
 	curl -L "https://script.google.com/macros/s/$(SID)/exec?type=sources" > sources.json
 
+update:
+	git pull
+	make
+	git commit -am "updated metadata"
+	git push
 
