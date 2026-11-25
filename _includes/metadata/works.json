@@ -12543,7 +12543,10 @@
 		"!!!AMT-sig": "2/4",
 		"!!!AMT-beat": "quarter",
 		"!!!AIN-vox": "monophonic",
-		"Barbeau": "Aventures galantes"
+		"Barbeau": "Aventures galantes",
+		"!!!EST-kern": "in-progress",
+		"!!!EED1": "Samuel Boone",
+		"!!!EEV1": "2026/11/25"
 	},
 	{
 		"!!!id": "mb141c",
@@ -12553,8 +12556,23 @@
 		"!!!PTL@@FR": "Le rossignol y chante",
 		"!!!PDT": "1962",
 		"!!!PED": "Barbeau, Marius",
+		"!!!COM": "Anonymous",
+		"!!!LYR": "Anonymous",
+		"!!!LAR": "n/a",
 		"!!!OCL": "Barbeau, Marius",
-		"Barbeau": "Aventures galantes"
+		"!!!ARE": "Baie-Saint-Paul, Québec, Canada",
+		"Catalogue Nº": "Nº373",
+		"!!!MPN": "Simard, Ovide",
+		"!!!MRD": "n/a",
+		"!!!AMD-key": "Eb",
+		"!!!AMT": "simple duple",
+		"!!!AMT-sig": "2/4",
+		"!!!AMT-beat": "quarter",
+		"!!!AIN-vox": "monophonic",
+		"Barbeau": "Aventures galantes",
+		"!!!EST-kern": "in-progress",
+		"!!!EED1": "Samuel Boone",
+		"!!!EEV1": "2026/11/25"
 	},
 	{
 		"!!!id": "mb142",
