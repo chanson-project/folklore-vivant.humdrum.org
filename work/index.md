@@ -103,5 +103,8 @@ layout: work
 {% include_relative listeners.html %}
 {% include_relative scripts-local.html %}
 <script>{% include_relative cadence-analysis.js %}</script>
+<script src="{{ '/work/wasm/cadence.js' | relative_url }}"></script>
+<script src="{{ '/work/wasm/cadence-bridge.js' | relative_url }}"></script>
+
 {% include scripts/kern-player.html %}
 {% include styles/svgdefs.html %}

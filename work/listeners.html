@@ -571,9 +571,27 @@ function displayWork(id) {
 		console.error("FILENAME", filename);
 		let address = `https://raw.githubusercontent.com/chanson-project/chanson-encoding/refs/heads/main/${prefix}/kern/${filename}`;
 		console.error("ADDRESS", address);
-		fetch(address)
+
+const cadenceRequestId =
+    window.WORK_CADENCE_REQUEST_ID =
+    (window.WORK_CADENCE_REQUEST_ID || 0) + 1;
+
+const previousPanel = document.getElementById("cadence-panel");
+
+if (previousPanel) {
+    previousPanel.classList.add("hidden");
+}
+
+fetch(address)
+
 			.then(function(response) { return response.text(); })
 			.then(function(kern) {
+
+    if (cadenceRequestId !== window.WORK_CADENCE_REQUEST_ID) {
+        return;
+    }
+
+
 				hnpOptions.postFunction = function() {
 					removeWait();
 					prepareQEvents(id);
@@ -601,14 +619,49 @@ function displayWork(id) {
 
     LAST_CADENCE_LIST = result.cadences;
 
-    // Extract all explicitly marked melodic segments.
-    const segments = extractMelodicSegments(kern);
 
-    // Store segment data separately from classified cadences.
-    window.LAST_MELODIC_SEGMENTS = segments;
+    window.LAST_MELODIC_SEGMENTS = [];
 
-    // Temporarily retain the existing cadence panel.
-    renderCadencePanel(segments, LAST_CADENCE_LIST, kern);
+    const panel = document.getElementById("cadence-panel");
+
+    if (panel) {
+        panel.textContent = "Analyzing melodic cadences...";
+        panel.classList.remove("hidden");
+    }
+
+    analyzeCadencesWithHumlib(kern)
+        .then(function(segments) {
+
+            if (cadenceRequestId !==
+                window.WORK_CADENCE_REQUEST_ID ||
+                !CADENCE_FILTER_ACTIVE) {
+                return;
+            }
+
+            window.LAST_MELODIC_SEGMENTS = segments;
+
+            renderCadencePanel(
+                segments,
+                LAST_CADENCE_LIST,
+                kern
+            );
+        })
+        .catch(function(error) {
+
+            if (cadenceRequestId !==
+                window.WORK_CADENCE_REQUEST_ID ||
+                !CADENCE_FILTER_ACTIVE) {
+                return;
+            }
+
+            console.error("Humlib analysis failed:", error);
+
+            if (panel) {
+                panel.textContent =
+                    "Melodic cadence analysis failed.";
+                panel.classList.remove("hidden");
+            }
+        });
 
 } else {
     window.LAST_MELODIC_SEGMENTS = [];

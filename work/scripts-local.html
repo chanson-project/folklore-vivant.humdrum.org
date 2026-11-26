@@ -911,27 +911,17 @@ function renderCadencePanel(segments, cadences, kernText) {
     const panel = document.getElementById("cadence-panel");
     if (!panel) return;
 
-    const key = _kernKey(kernText);
-
-    const pitchNames = [
-        "C", "C#", "D", "Eb", "E", "F",
-        "F#", "G", "Ab", "A", "Bb", "B"
-    ];
-
-    function pitchName(midi) {
-        return pitchNames[((midi % 12) + 12) % 12];
+    function escapeCadenceText(value) {
+        return String(value).replace(/[&<>"']/g, function(ch) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[ch];
+        });
     }
-
-    function degreeName(midi) {
-        return _pitchToDegree(
-            pitchName(midi),
-            key.tonic,
-            key.isMinor
-        ) || "?";
-    }
-
-    const tonicName = pitchName(key.tonic);
-    const keyLabel = tonicName + (key.isMinor ? " minor" : " major");
 
     let showDegrees = false;
 	let lineFilter = "all";
@@ -959,62 +949,36 @@ const filteredSegments = lineFilter === "all"
 
 const rows = filteredSegments.map(function(segment) {
 
-            const pitches = segment.lastThreeMidi.map(
-                showDegrees ? degreeName : pitchName
-            );
+
+            const pitches = showDegrees
+                ? segment.lastThreeDegrees
+                : segment.lastThreePitches;
 
             const finalPitch = showDegrees
-                ? degreeName(segment.finalMidi)
-                : pitchName(segment.finalMidi);
+                ? segment.finalDegree
+                : segment.finalPitch;
 
-         
-            // Classify cadence by the last two scale degrees.
-            const notes = segment.lastThreeMidi;
+            const type = segment.cadenceType === "None"
+                ? "—"
+                : segment.cadenceType.replace(
+                    /^(\d)-1/,
+                    "$1–1"
+                );
 
-            const penultimate = notes.length >= 2
-                ? notes[notes.length - 2]
-                : null;
-
-            const fromDegree = penultimate !== null
-                ? degreeName(penultimate)
-                : null;
-
-            const toDegree = degreeName(segment.finalMidi);
-
-            const movement = penultimate !== null
-                ? segment.finalMidi - penultimate
-                : 0;
-
-            const cadenceTypes = {
-                "3": { direction: -1, label: "Falling third" },
-                "2": { direction: -1, label: "Falling step" },
-                "5": { direction: -1, label: "Falling fifth" },
-                "7": { direction: 1, label: "Rising step" },
-                "6": { direction: 1, label: "Rising third" },
-                "4": { direction: 1, label: "Rising fourth" }
-            };
-
-            const match = cadenceTypes[fromDegree];
-
-            const type = toDegree === "1" &&
-                         match &&
-                         Math.sign(movement) === match.direction
-                ? `${fromDegree}–1 ${match.label}`
-                : "—";
-
+            const keyLabel = segment.key;
 
             return `
                 <tr>
-                    <td>${segment.segment}</td>
-                    <td>${keyLabel}</td>
-                    <td>m. ${segment.measure}</td>
+                    <td>${escapeCadenceText(segment.segment)}</td>
+                    <td>${escapeCadenceText(keyLabel)}</td>
+                    <td>m. ${escapeCadenceText(segment.measure)}</td>
                     <td class="cadence-pitch">
-                        ${pitches.join(" – ")}
+                        ${escapeCadenceText(pitches.join(" – "))}
                     </td>
                     <td class="cadence-pitch">
-                        ${finalPitch}
+                        ${escapeCadenceText(finalPitch)}
                     </td>
-                    <td>${type}</td>
+                    <td>${escapeCadenceText(type)}</td>
                 </tr>
             `;
         }).join("");
@@ -1117,10 +1081,7 @@ const rows = filteredSegments.map(function(segment) {
             });
         });
 
-    }
 
-    renderTable();
-	
 const lineButtons = panel.querySelectorAll(
     ".cadence-line-option"
 );
@@ -1131,6 +1092,11 @@ lineButtons.forEach(function(button) {
         renderTable();
     });
 });
+    }
+
+    renderTable();
+
+
 
 }
 
